@@ -22,8 +22,7 @@
         .risk-label-high { color: #ef4444; }
         .risk-label-mid  { color: #eab308; }
         .risk-label-low  { color: #22c55e; }
-        pre { white-space: pre-wrap; word-break: break-word; }
-        .spinner { border: 2px solid rgba(255,255,255,0.1); border-top-color: #2563eb; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
+        .spinner { border: 2px solid rgba(255,255,255,0.1); border-top-color: #2563eb; border-radius: 50%; width: 20px; height: 20px; animation: spin 0.8s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-in { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
@@ -31,12 +30,9 @@
 </head>
 <body class="selection:bg-blue-500/30 min-h-screen">
 
-    <!-- NAV -->
     <nav class="fixed top-0 w-full z-50 glass-card px-6 py-4 border-b border-white/5">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="mono text-sm font-bold tracking-widest text-blue-400 uppercase hover:text-blue-300 transition-colors">
-                ← ping_risk_strategist
-            </a>
+            <a href="index.html" class="mono text-sm font-bold tracking-widest text-blue-400 uppercase hover:text-blue-300 transition-colors">← ping_risk_strategist</a>
             <div class="flex items-center gap-2 mono text-[10px] text-slate-500 uppercase">
                 <span class="w-1.5 h-1.5 bg-blue-400 rounded-full live-tag"></span>
                 AI 分析系統上線中
@@ -45,451 +41,142 @@
     </nav>
 
     <main class="max-w-4xl mx-auto px-6 pt-28 pb-20">
-
-        <!-- HEADER -->
         <div class="text-center mb-12">
-            <div class="mono text-[10px] text-blue-400 tracking-[0.3em] uppercase mb-4">坑口自診器 · Powered by Google Gemini</div>
+            <div class="mono text-[10px] text-blue-400 tracking-[0.3em] uppercase mb-4">坑口自診器 · Powered by Claude AI</div>
             <h1 class="text-4xl font-black tracking-tight mb-4">AI 風險分析工具</h1>
             <p class="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
-                輸入你的帶課情境，或貼上課前同意書，AI 根據真實判決案例分析風險等級並給出建議。
+                輸入你的帶課情境，或貼上課前同意書，AI 根據真實判決案例分析風險等級並給出建議。<br>
+                <span class="text-slate-600">完全免費使用，不需要填任何 API Key。</span>
             </p>
         </div>
 
-        <!-- API KEY INPUT -->
-        <div class="glass-card rounded-2xl p-6 mb-8 border border-white/5">
-            <div class="flex items-start gap-4">
-                <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" stroke-width="1.5"/>
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center justify-between mb-2">
-                        <label class="mono text-[10px] text-slate-400 uppercase tracking-widest font-bold">Google Gemini API Key</label>
-                        <a href="https://aistudio.google.com/app/apikey" target="_blank"
-                           class="mono text-[10px] text-blue-400 hover:text-blue-300 underline underline-offset-4">
-                            免費申請 →
-                        </a>
-                    </div>
-                    <input id="api-key" type="password" placeholder="貼上你的 API Key（AIza...）"
-                           class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 mono">
-                    <p class="text-[11px] text-slate-600 mt-2">金鑰僅在你的瀏覽器中使用，不會上傳至任何伺服器</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- TOOL TABS -->
         <div class="flex border-b border-white/10 mb-8">
-            <button id="tab-situation" onclick="switchTab('situation')"
-                    class="tab-btn active px-6 py-4 font-bold text-sm text-slate-400 hover:text-white">
-                工具 01｜情境風險自診
-            </button>
-            <button id="tab-contract" onclick="switchTab('contract')"
-                    class="tab-btn px-6 py-4 font-bold text-sm text-slate-400 hover:text-white">
-                工具 02｜同意書體檢
-            </button>
+            <button id="tab-situation" onclick="switchTab('situation')" class="tab-btn active px-6 py-4 font-bold text-sm text-white">工具 01｜情境風險自診</button>
+            <button id="tab-contract" onclick="switchTab('contract')" class="tab-btn px-6 py-4 font-bold text-sm text-slate-400 hover:text-white">工具 02｜同意書體檢</button>
         </div>
 
-        <!-- TOOL 01: SITUATION CHECKER -->
+        <!-- TOOL 01 -->
         <div id="panel-situation">
             <div class="glass-card rounded-2xl p-8 mb-6 border border-white/5">
                 <div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-4">描述你的帶課情境</div>
-                <p class="text-xs text-slate-500 mb-5 leading-relaxed">
-                    例如：你帶什麼類型的課、學員狀況、有沒有書面紀錄、發生了什麼事或你擔心什麼。描述越具體，分析越準確。
-                </p>
-                <textarea id="situation-input" rows="7"
-                          placeholder="例如：我在社區健身房帶私人教練課，最近有一位 65 歲學員在深蹲訓練中說膝蓋痛，我叫她休息但沒有寫下任何紀錄。我平常不會讓學員簽任何同意書..."
-                          class="w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 leading-relaxed">
-                </textarea>
-
-                <!-- EXAMPLE BUTTONS -->
+                <p class="text-xs text-slate-500 mb-5 leading-relaxed">描述你帶什麼課、學員狀況、有沒有書面紀錄、發生什麼事或你擔心什麼。描述越具體，分析越準確。</p>
+                <textarea id="situation-input" rows="7" placeholder="例如：我在社區健身房帶私人教練課，最近有一位 65 歲學員在深蹲訓練中說膝蓋痛，我叫她休息但沒有寫下任何紀錄。我平常不會讓學員簽任何同意書..." class="w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 leading-relaxed"></textarea>
                 <div class="flex flex-wrap gap-2 mt-4 mb-6">
                     <div class="mono text-[10px] text-slate-600 uppercase mr-1 self-center">範例：</div>
-                    <button onclick="fillExample('situation', 0)"
-                            class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">
-                        ⚠ 長輩學員受傷
-                    </button>
-                    <button onclick="fillExample('situation', 1)"
-                            class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">
-                        ⚠ 文案用詞風險
-                    </button>
-                    <button onclick="fillExample('situation', 2)"
-                            class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">
-                        ✓ 已有防護流程
-                    </button>
+                    <button onclick="fillEx('situation',0)" class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">⚠ 長輩學員受傷</button>
+                    <button onclick="fillEx('situation',1)" class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">⚠ 文案用詞風險</button>
+                    <button onclick="fillEx('situation',2)" class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">✓ 已有防護流程</button>
                 </div>
-
-                <button onclick="analyze('situation')"
-                        class="accent-gradient w-full py-4 rounded-xl font-black text-sm uppercase hover:scale-[1.01] transition-transform shadow-lg shadow-blue-900/30">
-                    ▶ 開始 AI 風險分析
-                </button>
+                <button onclick="analyze('situation')" id="btn-situation" class="accent-gradient w-full py-4 rounded-xl font-black text-sm uppercase hover:scale-[1.01] transition-transform shadow-lg shadow-blue-900/30">▶ 開始 AI 風險分析</button>
             </div>
-
-            <!-- RESULT -->
-            <div id="result-situation" class="hidden fade-in"></div>
+            <div id="result-situation" class="hidden"></div>
         </div>
 
-        <!-- TOOL 02: CONTRACT CHECKER -->
+        <!-- TOOL 02 -->
         <div id="panel-contract" class="hidden">
             <div class="glass-card rounded-2xl p-8 mb-6 border border-white/5">
                 <div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-4">貼入課前同意書或服務合約</div>
-                <p class="text-xs text-slate-500 mb-5 leading-relaxed">
-                    把你現有的課前同意書、服務合約或免責聲明文字全部貼上。AI 會逐條分析缺漏，指出哪些在法庭上站不住腳。
-                </p>
-                <textarea id="contract-input" rows="10"
-                          placeholder="貼入你的課前同意書全文...&#10;&#10;例如：&#10;本人同意參加由XXX教練提供之個人訓練課程，並瞭解訓練過程中存在受傷風險..."
-                          class="w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 leading-relaxed">
-                </textarea>
-
-                <!-- EXAMPLE BUTTONS -->
+                <p class="text-xs text-slate-500 mb-5 leading-relaxed">把你現有的課前同意書、服務合約或免責聲明文字全部貼上。AI 會逐條分析缺漏，指出哪些在法庭上站不住腳。</p>
+                <textarea id="contract-input" rows="10" placeholder="貼入你的課前同意書全文..." class="w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 leading-relaxed"></textarea>
                 <div class="flex flex-wrap gap-2 mt-4 mb-6">
                     <div class="mono text-[10px] text-slate-600 uppercase mr-1 self-center">範例：</div>
-                    <button onclick="fillExample('contract', 0)"
-                            class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">
-                        ⚠ 高風險同意書
-                    </button>
-                    <button onclick="fillExample('contract', 1)"
-                            class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">
-                        ✓ 較完整版本
-                    </button>
+                    <button onclick="fillEx('contract',0)" class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">⚠ 高風險同意書</button>
+                    <button onclick="fillEx('contract',1)" class="mono text-[10px] px-3 py-1.5 rounded-lg border border-white/10 text-slate-500 hover:border-blue-500/40 hover:text-slate-300 transition-all">✓ 較完整版本</button>
                 </div>
-
-                <button onclick="analyze('contract')"
-                        class="accent-gradient w-full py-4 rounded-xl font-black text-sm uppercase hover:scale-[1.01] transition-transform shadow-lg shadow-blue-900/30">
-                    ▶ 開始同意書體檢
-                </button>
+                <button onclick="analyze('contract')" id="btn-contract" class="accent-gradient w-full py-4 rounded-xl font-black text-sm uppercase hover:scale-[1.01] transition-transform shadow-lg shadow-blue-900/30">▶ 開始同意書體檢</button>
             </div>
-
-            <!-- RESULT -->
-            <div id="result-contract" class="hidden fade-in"></div>
+            <div id="result-contract" class="hidden"></div>
         </div>
 
-        <!-- DISCLAIMER -->
-        <p class="text-[11px] text-slate-700 text-center mt-10 leading-relaxed">
-            本工具提供參考意見，不構成正式法律建議。若有高風險項目，建議進一步諮詢法律扶助基金會（412-88-02）或各縣市勞工局。
-        </p>
-
+        <p class="text-[11px] text-slate-700 text-center mt-10 leading-relaxed">本工具提供參考意見，不構成正式法律建議。若有高風險項目，建議進一步諮詢法律扶助基金會（412-88-02）。</p>
     </main>
 
 <script>
-    // ── EXAMPLES ──
-    const examples = {
-        situation: [
-            `我在社區活動中心帶 60-75 歲長輩的椅子瑜伽課，一週兩次，每次約 15 人。上週有一位阿嬤說她做完動作後腰很痛，後來去看醫生說是腰椎輕微壓迫。她的家屬現在在考慮要不要找我賠償。\n\n我沒有讓她們在課前簽任何同意書，也沒有做過書面的健康評估，只有在第一堂課口頭問過有沒有舊傷。我平常上課過程也不會做記錄。`,
-            `我是私人教練，最近在 Instagram 幫學員宣傳時寫了「矯正駝背、改善脊椎側彎」這類的文字。還有在私訊裡跟學員說我可以幫她「喬」一下肩膀的問題。\n\n我有物理治療師執照但目前是以個人健身教練身份收費，場地是我租的工作室，裡面有一張類似診療床的桌子。`,
-            `我帶私人健身課已經五年，每位新學員開始之前都會填一份我自己設計的課前健康問卷，並簽署一份說明訓練風險的同意書。訓練過程中如果學員說哪裡不舒服我會立刻停止並記錄在課程筆記本上，課後也會拍照存檔。`
-        ],
-        contract: [
-            `個人訓練服務同意書\n\n本人自願參加由教練提供之個人訓練服務，完全了解訓練存在風險，若因訓練造成任何傷害，本人不追究教練責任。\n\n簽名：___________\n日期：___________`,
-            `個人訓練課程參與同意書\n\n一、學員基本資訊\n姓名：＿＿＿ 緊急聯絡人：＿＿＿ 電話：＿＿＿\n\n二、健康聲明\n本人聲明目前無以下狀況（請勾選確認）：\n□ 心血管疾病 □ 高血壓 □ 糖尿病 □ 骨質疏鬆 □ 近期手術史\n\n三、風險告知\n教練已告知本人訓練過程中可能發生肌肉痠痛、關節不適等狀況。訓練過程中如感到不適，本人有權利隨時要求停止動作。\n\n四、責任限制\n訓練過程中，若因本人隱瞞健康狀況或不遵從教練指示而造成之傷害，由本人自行負責。教練應盡專業注意義務，若因教練疏失造成之傷害，不在本條款免責範圍內。\n\n本人已閱讀並理解上述內容。\n簽名：＿＿＿ 日期：＿＿＿`
-        ]
-    };
+const EX = {
+    situation: [
+        `我在社區活動中心帶 60-75 歲長輩的椅子瑜伽課，一週兩次，每次約 15 人。上週有一位阿嬤說她做完動作後腰很痛，後來去看醫生說是腰椎輕微壓迫。她的家屬現在在考慮要不要找我賠償。\n\n我沒有讓她們在課前簽任何同意書，也沒有做過書面的健康評估，只有在第一堂課口頭問過有沒有舊傷。`,
+        `我是私人教練，最近在 Instagram 幫學員宣傳時寫了「矯正駝背、改善脊椎側彎」這類的文字。還有在私訊裡跟學員說我可以幫她「喬」一下肩膀的問題。\n\n我有物理治療師執照但目前是以個人健身教練身份收費，場地是我租的工作室，裡面有一張類似診療床的桌子。`,
+        `我帶私人健身課已經五年，每位新學員開始之前都會填一份我自己設計的課前健康問卷，並簽署一份說明訓練風險的同意書。訓練過程中如果學員說哪裡不舒服我會立刻停止並記錄在課程筆記本上，課後也會拍照存檔。`
+    ],
+    contract: [
+        `個人訓練服務同意書\n\n本人自願參加由教練提供之個人訓練服務，完全了解訓練存在風險，若因訓練造成任何傷害，本人不追究教練責任。\n\n簽名：___________\n日期：___________`,
+        `個人訓練課程參與同意書\n\n一、學員基本資訊\n姓名：＿＿＿ 緊急聯絡人：＿＿＿ 電話：＿＿＿\n\n二、健康聲明\n本人聲明目前無以下狀況：□ 心血管疾病 □ 高血壓 □ 糖尿病 □ 骨質疏鬆 □ 近期手術史\n\n三、風險告知\n教練已告知本人訓練過程中可能發生肌肉痠痛、關節不適等狀況。如感到不適，本人有權利隨時要求停止動作。\n\n四、責任限制\n若因本人隱瞞健康狀況或不遵從教練指示而造成之傷害，由本人自行負責。\n\n簽名：＿＿＿ 日期：＿＿＿`
+    ]
+};
 
-    function fillExample(tool, idx) {
-        const id = tool === 'situation' ? 'situation-input' : 'contract-input';
-        document.getElementById(id).value = examples[tool][idx];
-    }
+function fillEx(t, i) { document.getElementById(t==='situation'?'situation-input':'contract-input').value = EX[t][i]; }
 
-    // ── TABS ──
-    function switchTab(tab) {
-        ['situation','contract'].forEach(t => {
-            document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
-            const btn = document.getElementById(`tab-${t}`);
-            btn.classList.toggle('active', t === tab);
-            btn.classList.toggle('text-white', t === tab);
-            btn.classList.toggle('text-slate-400', t !== tab);
+function switchTab(tab) {
+    ['situation','contract'].forEach(t => {
+        document.getElementById(`panel-${t}`).classList.toggle('hidden', t!==tab);
+        const b = document.getElementById(`tab-${t}`);
+        b.classList.toggle('active', t===tab);
+        b.classList.toggle('text-white', t===tab);
+        b.classList.toggle('text-slate-400', t!==tab);
+    });
+}
+if (location.hash==='#contract') switchTab('contract');
+
+async function analyze(tool) {
+    const input = document.getElementById(tool==='situation'?'situation-input':'contract-input').value.trim();
+    if (!input) { alert('請先輸入內容再進行分析。'); return; }
+
+    const resultEl = document.getElementById(`result-${tool}`);
+    const btnEl = document.getElementById(`btn-${tool}`);
+    resultEl.classList.remove('hidden');
+    resultEl.innerHTML = `<div class="glass-card rounded-2xl p-10 border border-white/5 flex items-center justify-center gap-4"><div class="spinner"></div><span class="text-slate-400 text-sm">AI 正在分析中，請稍候...</span></div>`;
+    btnEl.disabled = true; btnEl.classList.add('opacity-50','cursor-not-allowed');
+
+    const prompt = tool==='situation' ? `你是台灣運動教練職業法律風險分析師，熟悉運動傷害責任、消費者保護法、醫療法及台灣法院判決模式。\n\n分析以下帶課情境：\n${input}\n\n只回應JSON，格式：{"risk_level":"HIGH或MEDIUM或LOW","risk_score":1到10,"summary":"2-3句整體評估","risk_items":[{"issue":"風險點","detail":"說明","severity":"HIGH或MEDIUM或LOW"}],"recommendations":["建議1","建議2","建議3"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。LOW→FREE，其他→CONSULT。`
+    : `你是台灣運動教練職業法律風險分析師，專精課前同意書合規審查。\n\n分析以下同意書：\n${input}\n\n只回應JSON，格式：{"overall_rating":"RISKY或PARTIAL或SOLID","summary":"2-3句評估","missing_items":[{"item":"缺失項目","why_important":"重要性","severity":"HIGH或MEDIUM或LOW"}],"problematic_clauses":[{"clause":"問題條款","problem":"問題","fix":"修改建議"}],"good_points":["優點"],"recommendations":["建議1","建議2"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。SOLID→FREE，其他→CONSULT。`;
+
+    try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                messages: [{role:'user', content: prompt}]
+            })
         });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || `錯誤 ${res.status}`);
+        const text = (data.content||[]).map(b=>b.text||'').join('');
+        let parsed;
+        try { parsed = JSON.parse(text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim()); }
+        catch { resultEl.innerHTML=`<div class="glass-card rounded-2xl p-8 border border-white/5"><pre class="text-sm text-slate-300 whitespace-pre-wrap">${esc(text)}</pre></div>`; return; }
+        renderResult(resultEl, parsed, tool);
+    } catch(err) {
+        resultEl.innerHTML=`<div class="glass-card rounded-2xl p-8 border border-red-500/20 bg-red-500/5"><div class="mono text-[10px] text-red-400 uppercase mb-3">分析失敗</div><p class="text-sm text-slate-400">${esc(err.message)}</p></div>`;
+    } finally {
+        btnEl.disabled=false; btnEl.classList.remove('opacity-50','cursor-not-allowed');
     }
-
-    // On load, check if URL has #contract
-    if (location.hash === '#contract') switchTab('contract');
-
-    // ── ANALYZE ──
-    async function analyze(tool) {
-        const apiKey = document.getElementById('api-key').value.trim();
-        if (!apiKey) {
-            alert('請先填入 Google Gemini API Key。\n\n可到 aistudio.google.com/app/apikey 免費申請。');
-            return;
-        }
-
-        const inputId = tool === 'situation' ? 'situation-input' : 'contract-input';
-        const content = document.getElementById(inputId).value.trim();
-        if (!content) {
-            alert('請先輸入內容再進行分析。');
-            return;
-        }
-
-        const resultId = `result-${tool}`;
-        const resultEl = document.getElementById(resultId);
-
-        // Show loading
-        resultEl.classList.remove('hidden');
-        resultEl.className = 'fade-in';
-        resultEl.innerHTML = `
-            <div class="glass-card rounded-2xl p-10 border border-white/5 flex items-center justify-center gap-4">
-                <div class="spinner"></div>
-                <span class="text-slate-400 text-sm">AI 正在分析中，請稍候...</span>
-            </div>`;
-
-        const prompt = tool === 'situation' ? buildSituationPrompt(content) : buildContractPrompt(content);
-
-        try {
-            const response = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: { temperature: 0.4, maxOutputTokens: 2048 }
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error?.message || `API 錯誤 ${response.status}`);
-            }
-
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            let parsed;
-            try {
-                const cleaned = text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
-                parsed = JSON.parse(cleaned);
-            } catch {
-                // fallback: show raw
-                resultEl.innerHTML = `<div class="glass-card rounded-2xl p-8 border border-white/5">
-                    <pre class="text-sm text-slate-300 leading-relaxed">${escHtml(text)}</pre></div>`;
-                return;
-            }
-
-            renderResult(resultEl, parsed, tool);
-
-        } catch (err) {
-            resultEl.innerHTML = `
-                <div class="glass-card rounded-2xl p-8 border border-red-500/20 bg-red-500/5">
-                    <div class="mono text-[10px] text-red-400 uppercase mb-3">分析失敗</div>
-                    <p class="text-sm text-slate-400">${escHtml(err.message)}</p>
-                    <p class="text-xs text-slate-600 mt-3">請確認 API Key 正確，並確認已在 Google AI Studio 啟用 Gemini API。</p>
-                </div>`;
-        }
-    }
-
-    // ── PROMPTS ──
-    function buildSituationPrompt(content) {
-        return `你是一位台灣運動教練職業法律風險分析師，專精於運動傷害責任、消費者保護法、醫療法等相關法規，並熟悉台灣法院對運動教練職業責任的判決模式。
-
-請分析以下教練描述的帶課情境，評估職業法律風險。
-
-【教練情境描述】
-${content}
-
-請以 JSON 格式回應，格式如下：
-{
-  "risk_level": "HIGH" 或 "MEDIUM" 或 "LOW",
-  "risk_score": 1到10的數字（10最高風險）,
-  "summary": "2-3句話的整體風險評估摘要",
-  "risk_items": [
-    {
-      "issue": "具體風險點名稱",
-      "detail": "說明為什麼這是風險，可能的法律後果",
-      "severity": "HIGH" 或 "MEDIUM" 或 "LOW"
-    }
-  ],
-  "recommendations": [
-    "具體可執行的建議1",
-    "具體可執行的建議2",
-    "具體可執行的建議3"
-  ],
-  "next_step": "FREE" 或 "CONSULT",
-  "next_step_reason": "說明為什麼建議這個下一步"
 }
 
-next_step 規則：
-- LOW 風險 → "FREE"（引導領免費課前評估表）
-- MEDIUM 或 HIGH 風險 → "CONSULT"（引導預約坑口對談）
+function renderResult(el, d, tool) {
+    const isSit = tool==='situation';
+    const level = isSit ? d.risk_level : d.overall_rating;
+    const [rc,rl,rv] = level==='HIGH'||level==='RISKY' ? ['risk-high','高風險','risk-label-high'] : level==='MEDIUM'||level==='PARTIAL' ? ['risk-mid','部分風險','risk-label-mid'] : ['risk-low','低風險','risk-label-low'];
 
-只回應 JSON，不要有其他文字或 markdown。`;
+    const cta = d.next_step==='CONSULT'
+        ? `<div class="border border-blue-500/20 rounded-xl p-6 bg-blue-500/5"><div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-3">建議下一步</div><p class="text-sm text-slate-300 mb-4">${esc(d.next_step_reason)}</p><div class="flex flex-col sm:flex-row gap-3"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdjg5fvJCv6UU0IWT_ELL67IDF43xVH8ppXD5Vj8F35V2kKNQ/viewform" target="_blank" class="accent-gradient text-center py-3 px-6 rounded-xl font-black text-sm hover:scale-105 transition-transform">預約坑口對談 NT$500</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSfUIN8tFE26_NojvtMwHM7WCLUDJC_JtDKuZ06z62TLW3CgSg/viewform" target="_blank" class="text-center py-3 px-6 rounded-xl font-bold text-sm border border-white/10 hover:bg-white/5 transition-all">先填免費評估表</a></div></div>`
+        : `<div class="border border-green-500/20 rounded-xl p-6 bg-green-500/5"><div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">建議下一步</div><p class="text-sm text-slate-300 mb-4">${esc(d.next_step_reason)}</p><a href="https://docs.google.com/forms/d/e/1FAIpQLSfUIN8tFE26_NojvtMwHM7WCLUDJC_JtDKuZ06z62TLW3CgSg/viewform" target="_blank" class="inline-block py-3 px-6 rounded-xl font-black text-sm border border-green-500/30 text-green-400 hover:bg-green-500/10 transition-all">領取免費課前評估表 →</a></div>`;
+
+    let items = '';
+    if (isSit && d.risk_items?.length) {
+        items = `<div><div class="mono text-[10px] text-slate-500 uppercase tracking-widest mb-4">風險點分析</div><div class="space-y-3">${d.risk_items.map(r=>{const sc=r.severity==='HIGH'?'risk-label-high':r.severity==='MEDIUM'?'risk-label-mid':'risk-label-low';return`<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><div class="flex items-center gap-3 mb-2"><span class="mono text-[10px] font-bold ${sc}">${r.severity}</span><span class="text-sm font-bold">${esc(r.issue)}</span></div><p class="text-xs text-slate-400 leading-relaxed">${esc(r.detail)}</p></div>`;}).join('')}</div></div>`;
+    } else if (!isSit) {
+        const mi=d.missing_items||[], pc=d.problematic_clauses||[], gp=d.good_points||[];
+        items = (mi.length?`<div><div class="mono text-[10px] text-red-400 uppercase tracking-widest mb-4">缺失項目</div><div class="space-y-3">${mi.map(m=>{const sc=m.severity==='HIGH'?'risk-label-high':m.severity==='MEDIUM'?'risk-label-mid':'risk-label-low';return`<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><div class="flex items-center gap-3 mb-2"><span class="mono text-[10px] font-bold ${sc}">${m.severity}</span><span class="text-sm font-bold">${esc(m.item)}</span></div><p class="text-xs text-slate-400 leading-relaxed">${esc(m.why_important)}</p></div>`;}).join('')}</div></div>`:'')
+            +(pc.length?`<div><div class="mono text-[10px] text-yellow-400 uppercase tracking-widest mb-4">有問題的條款</div><div class="space-y-3">${pc.map(p=>`<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><p class="text-xs text-slate-500 mb-2 italic">"${esc(p.clause)}"</p><p class="text-xs text-red-400 mb-1">問題：${esc(p.problem)}</p><p class="text-xs text-green-400">建議：${esc(p.fix)}</p></div>`).join('')}</div></div>`:'')
+            +(gp.length?`<div><div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">做得好的地方</div><ul class="space-y-2">${gp.map(g=>`<li class="text-xs text-slate-400 flex gap-2"><span class="text-green-500">✔</span>${esc(g)}</li>`).join('')}</ul></div>`:'');
     }
 
-    function buildContractPrompt(content) {
-        return `你是一位台灣運動教練職業法律風險分析師，專精於課前同意書、服務合約的合規性審查，熟悉消費者保護法、民法、運動傷害相關判決。
-
-請分析以下課前同意書或服務合約的內容，找出法律漏洞與缺失。
-
-【同意書內容】
-${content}
-
-請以 JSON 格式回應，格式如下：
-{
-  "overall_rating": "RISKY" 或 "PARTIAL" 或 "SOLID",
-  "summary": "2-3句話的整體評估",
-  "missing_items": [
-    {
-      "item": "缺少的項目名稱",
-      "why_important": "為什麼這很重要，沒有的話有什麼法律風險",
-      "severity": "HIGH" 或 "MEDIUM" 或 "LOW"
-    }
-  ],
-  "problematic_clauses": [
-    {
-      "clause": "有問題的條款描述或原文",
-      "problem": "這個條款的問題是什麼",
-      "fix": "建議如何修改"
-    }
-  ],
-  "good_points": [
-    "做得好的地方1（如果有的話）"
-  ],
-  "recommendations": [
-    "具體可執行的改善建議1",
-    "具體可執行的建議2"
-  ],
-  "next_step": "FREE" 或 "CONSULT",
-  "next_step_reason": "說明為什麼建議這個下一步"
+    el.innerHTML = `<div class="glass-card rounded-2xl border ${rc} overflow-hidden mb-4 fade-in"><div class="p-8 border-b border-white/5"><div class="flex items-center justify-between mb-4 flex-wrap gap-3"><div class="mono text-[10px] text-slate-500 uppercase tracking-widest">AI 分析報告</div><div class="flex items-center gap-3">${isSit?`<div class="mono text-[10px] text-slate-500">風險指數 <span class="${rv} font-bold">${d.risk_score}/10</span></div>`:''}<span class="mono text-sm font-black px-4 py-1.5 rounded-full border ${rc} ${rv}">${rl}</span></div></div><p class="text-sm text-slate-300 leading-relaxed">${esc(d.summary)}</p></div><div class="p-8 space-y-8">${items}${d.recommendations?.length?`<div><div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-4">具體建議</div><ul class="space-y-2">${d.recommendations.map(r=>`<li class="text-sm text-slate-400 flex gap-3 leading-relaxed"><span class="text-blue-400 shrink-0 mt-0.5">→</span>${esc(r)}</li>`).join('')}</ul></div>`:''}${cta}</div></div>`;
 }
 
-next_step 規則：
-- overall_rating 為 SOLID → "FREE"
-- overall_rating 為 PARTIAL 或 RISKY → "CONSULT"
-
-若同意書幾乎是空白或極度簡陋，missing_items 可以列出5個以上主要缺失。
-只回應 JSON，不要有其他文字或 markdown。`;
-    }
-
-    // ── RENDER RESULT ──
-    function renderResult(el, d, tool) {
-        const isSituation = tool === 'situation';
-
-        // Risk level config
-        let riskClass, riskLabel, riskColor;
-        const level = isSituation ? d.risk_level : d.overall_rating;
-        if (level === 'HIGH' || level === 'RISKY') {
-            riskClass = 'risk-high'; riskLabel = isSituation ? '高風險' : '高風險同意書';
-            riskColor = 'risk-label-high';
-        } else if (level === 'MEDIUM' || level === 'PARTIAL') {
-            riskClass = 'risk-mid'; riskLabel = isSituation ? '中風險' : '部分缺失';
-            riskColor = 'risk-label-mid';
-        } else {
-            riskClass = 'risk-low'; riskLabel = isSituation ? '低風險' : '基本完整';
-            riskColor = 'risk-label-low';
-        }
-
-        const nextStepHTML = d.next_step === 'CONSULT'
-            ? `<div class="border border-blue-500/20 rounded-xl p-6 bg-blue-500/5">
-                <div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-3">建議下一步</div>
-                <p class="text-sm text-slate-300 mb-4">${escHtml(d.next_step_reason)}</p>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdjg5fvJCv6UU0IWT_ELL67IDF43xVH8ppXD5Vj8F35V2kKNQ/viewform" target="_blank"
-                       class="accent-gradient text-center py-3 px-6 rounded-xl font-black text-sm hover:scale-105 transition-transform">
-                        預約坑口對談 NT$500
-                    </a>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfUIN8tFE26_NojvtMwHM7WCLUDJC_JtDKuZ06z62TLW3CgSg/viewform" target="_blank"
-                       class="text-center py-3 px-6 rounded-xl font-bold text-sm border border-white/10 hover:bg-white/5 transition-all">
-                        先填免費評估表
-                    </a>
-                </div>
-               </div>`
-            : `<div class="border border-green-500/20 rounded-xl p-6 bg-green-500/5">
-                <div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">建議下一步</div>
-                <p class="text-sm text-slate-300 mb-4">${escHtml(d.next_step_reason)}</p>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfUIN8tFE26_NojvtMwHM7WCLUDJC_JtDKuZ06z62TLW3CgSg/viewform" target="_blank"
-                   class="inline-block py-3 px-6 rounded-xl font-black text-sm border border-green-500/30 text-green-400 hover:bg-green-500/10 transition-all">
-                    領取免費課前評估表 →
-                </a>
-               </div>`;
-
-        // Risk items or missing items
-        let itemsHTML = '';
-        if (isSituation && d.risk_items?.length) {
-            itemsHTML = `
-                <div>
-                    <div class="mono text-[10px] text-slate-500 uppercase tracking-widest mb-4">風險點分析</div>
-                    <div class="space-y-3">
-                        ${d.risk_items.map(r => {
-                            const sc = r.severity === 'HIGH' ? 'risk-label-high' : r.severity === 'MEDIUM' ? 'risk-label-mid' : 'risk-label-low';
-                            return `<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <span class="mono text-[10px] font-bold ${sc}">${r.severity}</span>
-                                    <span class="text-sm font-bold">${escHtml(r.issue)}</span>
-                                </div>
-                                <p class="text-xs text-slate-400 leading-relaxed">${escHtml(r.detail)}</p>
-                            </div>`;
-                        }).join('')}
-                    </div>
-                </div>`;
-        } else if (!isSituation) {
-            const missing = d.missing_items || [];
-            const problems = d.problematic_clauses || [];
-            const good = d.good_points || [];
-            itemsHTML = `
-                ${missing.length ? `<div>
-                    <div class="mono text-[10px] text-red-400 uppercase tracking-widest mb-4">缺失項目</div>
-                    <div class="space-y-3">
-                        ${missing.map(m => {
-                            const sc = m.severity === 'HIGH' ? 'risk-label-high' : m.severity === 'MEDIUM' ? 'risk-label-mid' : 'risk-label-low';
-                            return `<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <span class="mono text-[10px] font-bold ${sc}">${m.severity}</span>
-                                    <span class="text-sm font-bold">${escHtml(m.item)}</span>
-                                </div>
-                                <p class="text-xs text-slate-400 leading-relaxed">${escHtml(m.why_important)}</p>
-                            </div>`;
-                        }).join('')}
-                    </div>
-                </div>` : ''}
-                ${problems.length ? `<div>
-                    <div class="mono text-[10px] text-yellow-400 uppercase tracking-widest mb-4">有問題的條款</div>
-                    <div class="space-y-3">
-                        ${problems.map(p => `<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5">
-                            <p class="text-xs text-slate-500 mb-2 italic">"${escHtml(p.clause)}"</p>
-                            <p class="text-xs text-red-400 mb-1">問題：${escHtml(p.problem)}</p>
-                            <p class="text-xs text-green-400">建議：${escHtml(p.fix)}</p>
-                        </div>`).join('')}
-                    </div>
-                </div>` : ''}
-                ${good.length ? `<div>
-                    <div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">做得好的地方</div>
-                    <ul class="space-y-2">
-                        ${good.map(g=>`<li class="text-xs text-slate-400 flex gap-2"><span class="text-green-500">✔</span>${escHtml(g)}</li>`).join('')}
-                    </ul>
-                </div>` : ''}`;
-        }
-
-        el.innerHTML = `
-            <div class="glass-card rounded-2xl border ${riskClass} overflow-hidden mb-4">
-                <!-- RESULT HEADER -->
-                <div class="p-8 border-b border-white/5">
-                    <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
-                        <div class="mono text-[10px] text-slate-500 uppercase tracking-widest">AI 分析報告</div>
-                        <div class="flex items-center gap-3">
-                            ${isSituation ? `<div class="mono text-[10px] text-slate-500">風險指數 <span class="${riskColor} font-bold">${d.risk_score}/10</span></div>` : ''}
-                            <span class="mono text-sm font-black px-4 py-1.5 rounded-full border ${riskClass} ${riskColor}">${riskLabel}</span>
-                        </div>
-                    </div>
-                    <p class="text-sm text-slate-300 leading-relaxed">${escHtml(d.summary)}</p>
-                </div>
-
-                <!-- DETAILS -->
-                <div class="p-8 space-y-8">
-                    ${itemsHTML}
-
-                    ${d.recommendations?.length ? `<div>
-                        <div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-4">具體建議</div>
-                        <ul class="space-y-2">
-                            ${d.recommendations.map(r=>`<li class="text-sm text-slate-400 flex gap-3 leading-relaxed"><span class="text-blue-400 shrink-0 mt-0.5">→</span>${escHtml(r)}</li>`).join('')}
-                        </ul>
-                    </div>` : ''}
-
-                    ${nextStepHTML}
-                </div>
-            </div>`;
-    }
-
-    function escHtml(s) {
-        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
 </body>
 </html>
