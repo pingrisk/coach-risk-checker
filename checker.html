@@ -26,6 +26,7 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .fade-in { animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        .notice-bar { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); border-radius: 12px; padding: 10px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body class="selection:bg-blue-500/30 min-h-screen">
@@ -104,79 +105,94 @@ const EX = {
     ]
 };
 
-function fillEx(t, i) { document.getElementById(t==='situation'?'situation-input':'contract-input').value = EX[t][i]; }
+function fillEx(t, i) {
+    document.getElementById(t === 'situation' ? 'situation-input' : 'contract-input').value = EX[t][i];
+}
 
 function switchTab(tab) {
-    ['situation','contract'].forEach(t => {
-        document.getElementById(`panel-${t}`).classList.toggle('hidden', t!==tab);
+    ['situation', 'contract'].forEach(t => {
+        document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
         const b = document.getElementById(`tab-${t}`);
-        b.classList.toggle('active', t===tab);
-        b.classList.toggle('text-white', t===tab);
-        b.classList.toggle('text-slate-400', t!==tab);
+        b.classList.toggle('active', t === tab);
+        b.classList.toggle('text-white', t === tab);
+        b.classList.toggle('text-slate-400', t !== tab);
     });
 }
-if (location.hash==='#contract') switchTab('contract');
+if (location.hash === '#contract') switchTab('contract');
 
 async function analyze(tool) {
-    const input = document.getElementById(tool==='situation'?'situation-input':'contract-input').value.trim();
+    const input = document.getElementById(tool === 'situation' ? 'situation-input' : 'contract-input').value.trim();
     if (!input) { alert('請先輸入內容再進行分析。'); return; }
 
     const resultEl = document.getElementById(`result-${tool}`);
     const btnEl = document.getElementById(`btn-${tool}`);
     resultEl.classList.remove('hidden');
-    resultEl.innerHTML = `<div class="glass-card rounded-2xl p-10 border border-white/5 flex items-center justify-center gap-4"><div class="spinner"></div><span class="text-slate-400 text-sm">AI 正在分析中，請稍候...</span></div>`;
-    btnEl.disabled = true; btnEl.classList.add('opacity-50','cursor-not-allowed');
+    resultEl.innerHTML = `<div class="glass-card rounded-2xl p-10 border border-white/5 flex items-center justify-center gap-4"><div class="spinner"></div><span class="text-slate-400 text-sm">AI 正在分析中，請稍候…</span></div>`;
+    btnEl.disabled = true;
+    btnEl.classList.add('opacity-50', 'cursor-not-allowed');
 
-    const prompt = tool==='situation' ? `你是台灣運動教練職業法律風險分析師，熟悉運動傷害責任、消費者保護法、醫療法及台灣法院判決模式。\n\n分析以下帶課情境：\n${input}\n\n只回應JSON，格式：{"risk_level":"HIGH或MEDIUM或LOW","risk_score":1到10,"summary":"2-3句整體評估","risk_items":[{"issue":"風險點","detail":"說明","severity":"HIGH或MEDIUM或LOW"}],"recommendations":["建議1","建議2","建議3"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。LOW→FREE，其他→CONSULT。`
-    : `你是台灣運動教練職業法律風險分析師，專精課前同意書合規審查。\n\n分析以下同意書：\n${input}\n\n只回應JSON，格式：{"overall_rating":"RISKY或PARTIAL或SOLID","summary":"2-3句評估","missing_items":[{"item":"缺失項目","why_important":"重要性","severity":"HIGH或MEDIUM或LOW"}],"problematic_clauses":[{"clause":"問題條款","problem":"問題","fix":"修改建議"}],"good_points":["優點"],"recommendations":["建議1","建議2"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。SOLID→FREE，其他→CONSULT。`;
+    const prompt = tool === 'situation'
+        ? `你是台灣運動教練職業法律風險分析師，熟悉運動傷害責任、消費者保護法、醫療法及台灣法院判決模式。\n\n分析以下帶課情境：\n${input}\n\n只回應JSON，格式：{"risk_level":"HIGH或MEDIUM或LOW","risk_score":1到10,"summary":"2-3句整體評估","risk_items":[{"issue":"風險點","detail":"說明","severity":"HIGH或MEDIUM或LOW"}],"recommendations":["建議1","建議2","建議3"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。LOW→FREE，其他→CONSULT。`
+        : `你是台灣運動教練職業法律風險分析師，專精課前同意書合規審查。\n\n分析以下同意書：\n${input}\n\n只回應JSON，格式：{"overall_rating":"RISKY或PARTIAL或SOLID","summary":"2-3句評估","missing_items":[{"item":"缺失項目","why_important":"重要性","severity":"HIGH或MEDIUM或LOW"}],"problematic_clauses":[{"clause":"問題條款","problem":"問題","fix":"修改建議"}],"good_points":["優點"],"recommendations":["建議1","建議2"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。SOLID→FREE，其他→CONSULT。`;
 
     try {
         const res = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
-            headers: {'Content-Type':'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model: 'claude-sonnet-4-20250514',
                 max_tokens: 1000,
-                messages: [{role:'user', content: prompt}]
+                messages: [{ role: 'user', content: prompt }]
             })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error?.message || `錯誤 ${res.status}`);
-        const text = (data.content||[]).map(b=>b.text||'').join('');
+        const text = (data.content || []).map(b => b.text || '').join('');
         let parsed;
-        try { parsed = JSON.parse(text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim()); }
-        catch { resultEl.innerHTML=`<div class="glass-card rounded-2xl p-8 border border-white/5"><pre class="text-sm text-slate-300 whitespace-pre-wrap">${esc(text)}</pre></div>`; return; }
+        try { parsed = JSON.parse(text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()); }
+        catch { resultEl.innerHTML = `<div class="glass-card rounded-2xl p-8 border border-white/5"><pre class="text-sm text-slate-300 whitespace-pre-wrap">${esc(text)}</pre></div>`; return; }
         renderResult(resultEl, parsed, tool);
-    } catch(err) {
-        resultEl.innerHTML=`<div class="glass-card rounded-2xl p-8 border border-red-500/20 bg-red-500/5"><div class="mono text-[10px] text-red-400 uppercase mb-3">分析失敗</div><p class="text-sm text-slate-400">${esc(err.message)}</p></div>`;
+    } catch (err) {
+        resultEl.innerHTML = `<div class="glass-card rounded-2xl p-8 border border-red-500/20 bg-red-500/5"><div class="mono text-[10px] text-red-400 uppercase mb-3">分析失敗</div><p class="text-sm text-slate-400">${esc(err.message)}</p></div>`;
     } finally {
-        btnEl.disabled=false; btnEl.classList.remove('opacity-50','cursor-not-allowed');
+        btnEl.disabled = false;
+        btnEl.classList.remove('opacity-50', 'cursor-not-allowed');
     }
 }
 
 function renderResult(el, d, tool) {
-    const isSit = tool==='situation';
+    const isSit = tool === 'situation';
     const level = isSit ? d.risk_level : d.overall_rating;
-    const [rc,rl,rv] = level==='HIGH'||level==='RISKY' ? ['risk-high','高風險','risk-label-high'] : level==='MEDIUM'||level==='PARTIAL' ? ['risk-mid','部分風險','risk-label-mid'] : ['risk-low','低風險','risk-label-low'];
+    const [rc, rl, rv] = level === 'HIGH' || level === 'RISKY'
+        ? ['risk-high', '高風險', 'risk-label-high']
+        : level === 'MEDIUM' || level === 'PARTIAL'
+        ? ['risk-mid', '部分風險', 'risk-label-mid']
+        : ['risk-low', '低風險', 'risk-label-low'];
 
-    const cta = d.next_step==='CONSULT'
+    const cta = d.next_step === 'CONSULT'
         ? `<div class="border border-blue-500/20 rounded-xl p-6 bg-blue-500/5"><div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-3">建議下一步</div><p class="text-sm text-slate-300 mb-4">${esc(d.next_step_reason)}</p><div class="flex flex-col sm:flex-row gap-3"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdjg5fvJCv6UU0IWT_ELL67IDF43xVH8ppXD5Vj8F35V2kKNQ/viewform" target="_blank" class="accent-gradient text-center py-3 px-6 rounded-xl font-black text-sm hover:scale-105 transition-transform">預約坑口對談 NT$500</a><a href="https://docs.google.com/forms/d/e/1FAIpQLSfUIN8tFE26_NojvtMwHM7WCLUDJC_JtDKuZ06z62TLW3CgSg/viewform" target="_blank" class="text-center py-3 px-6 rounded-xl font-bold text-sm border border-white/10 hover:bg-white/5 transition-all">先填免費評估表</a></div></div>`
         : `<div class="border border-green-500/20 rounded-xl p-6 bg-green-500/5"><div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">建議下一步</div><p class="text-sm text-slate-300 mb-4">${esc(d.next_step_reason)}</p><a href="https://docs.google.com/forms/d/e/1FAIpQLSfUIN8tFE26_NojvtMwHM7WCLUDJC_JtDKuZ06z62TLW3CgSg/viewform" target="_blank" class="inline-block py-3 px-6 rounded-xl font-black text-sm border border-green-500/30 text-green-400 hover:bg-green-500/10 transition-all">領取免費課前評估表 →</a></div>`;
 
     let items = '';
     if (isSit && d.risk_items?.length) {
-        items = `<div><div class="mono text-[10px] text-slate-500 uppercase tracking-widest mb-4">風險點分析</div><div class="space-y-3">${d.risk_items.map(r=>{const sc=r.severity==='HIGH'?'risk-label-high':r.severity==='MEDIUM'?'risk-label-mid':'risk-label-low';return`<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><div class="flex items-center gap-3 mb-2"><span class="mono text-[10px] font-bold ${sc}">${r.severity}</span><span class="text-sm font-bold">${esc(r.issue)}</span></div><p class="text-xs text-slate-400 leading-relaxed">${esc(r.detail)}</p></div>`;}).join('')}</div></div>`;
+        items = `<div><div class="mono text-[10px] text-slate-500 uppercase tracking-widest mb-4">風險點分析</div><div class="space-y-3">${d.risk_items.map(r => {
+            const sc = r.severity === 'HIGH' ? 'risk-label-high' : r.severity === 'MEDIUM' ? 'risk-label-mid' : 'risk-label-low';
+            return `<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><div class="flex items-center gap-3 mb-2"><span class="mono text-[10px] font-bold ${sc}">${r.severity}</span><span class="text-sm font-bold">${esc(r.issue)}</span></div><p class="text-xs text-slate-400 leading-relaxed">${esc(r.detail)}</p></div>`;
+        }).join('')}</div></div>`;
     } else if (!isSit) {
-        const mi=d.missing_items||[], pc=d.problematic_clauses||[], gp=d.good_points||[];
-        items = (mi.length?`<div><div class="mono text-[10px] text-red-400 uppercase tracking-widest mb-4">缺失項目</div><div class="space-y-3">${mi.map(m=>{const sc=m.severity==='HIGH'?'risk-label-high':m.severity==='MEDIUM'?'risk-label-mid':'risk-label-low';return`<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><div class="flex items-center gap-3 mb-2"><span class="mono text-[10px] font-bold ${sc}">${m.severity}</span><span class="text-sm font-bold">${esc(m.item)}</span></div><p class="text-xs text-slate-400 leading-relaxed">${esc(m.why_important)}</p></div>`;}).join('')}</div></div>`:'')
-            +(pc.length?`<div><div class="mono text-[10px] text-yellow-400 uppercase tracking-widest mb-4">有問題的條款</div><div class="space-y-3">${pc.map(p=>`<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><p class="text-xs text-slate-500 mb-2 italic">"${esc(p.clause)}"</p><p class="text-xs text-red-400 mb-1">問題：${esc(p.problem)}</p><p class="text-xs text-green-400">建議：${esc(p.fix)}</p></div>`).join('')}</div></div>`:'')
-            +(gp.length?`<div><div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">做得好的地方</div><ul class="space-y-2">${gp.map(g=>`<li class="text-xs text-slate-400 flex gap-2"><span class="text-green-500">✔</span>${esc(g)}</li>`).join('')}</ul></div>`:'');
+        const mi = d.missing_items || [], pc = d.problematic_clauses || [], gp = d.good_points || [];
+        items = (mi.length ? `<div><div class="mono text-[10px] text-red-400 uppercase tracking-widest mb-4">缺失項目</div><div class="space-y-3">${mi.map(m => {
+            const sc = m.severity === 'HIGH' ? 'risk-label-high' : m.severity === 'MEDIUM' ? 'risk-label-mid' : 'risk-label-low';
+            return `<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><div class="flex items-center gap-3 mb-2"><span class="mono text-[10px] font-bold ${sc}">${m.severity}</span><span class="text-sm font-bold">${esc(m.item)}</span></div><p class="text-xs text-slate-400 leading-relaxed">${esc(m.why_important)}</p></div>`;
+        }).join('')}</div></div>` : '')
+            + (pc.length ? `<div><div class="mono text-[10px] text-yellow-400 uppercase tracking-widest mb-4">有問題的條款</div><div class="space-y-3">${pc.map(p => `<div class="bg-slate-900/60 rounded-xl p-5 border border-white/5"><p class="text-xs text-slate-500 mb-2 italic">"${esc(p.clause)}"</p><p class="text-xs text-red-400 mb-1">問題：${esc(p.problem)}</p><p class="text-xs text-green-400">建議：${esc(p.fix)}</p></div>`).join('')}</div></div>` : '')
+            + (gp.length ? `<div><div class="mono text-[10px] text-green-400 uppercase tracking-widest mb-3">做得好的地方</div><ul class="space-y-2">${gp.map(g => `<li class="text-xs text-slate-400 flex gap-2"><span class="text-green-500">✔</span>${esc(g)}</li>`).join('')}</ul></div>` : '');
     }
 
-    el.innerHTML = `<div class="glass-card rounded-2xl border ${rc} overflow-hidden mb-4 fade-in"><div class="p-8 border-b border-white/5"><div class="flex items-center justify-between mb-4 flex-wrap gap-3"><div class="mono text-[10px] text-slate-500 uppercase tracking-widest">AI 分析報告</div><div class="flex items-center gap-3">${isSit?`<div class="mono text-[10px] text-slate-500">風險指數 <span class="${rv} font-bold">${d.risk_score}/10</span></div>`:''}<span class="mono text-sm font-black px-4 py-1.5 rounded-full border ${rc} ${rv}">${rl}</span></div></div><p class="text-sm text-slate-300 leading-relaxed">${esc(d.summary)}</p></div><div class="p-8 space-y-8">${items}${d.recommendations?.length?`<div><div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-4">具體建議</div><ul class="space-y-2">${d.recommendations.map(r=>`<li class="text-sm text-slate-400 flex gap-3 leading-relaxed"><span class="text-blue-400 shrink-0 mt-0.5">→</span>${esc(r)}</li>`).join('')}</ul></div>`:''}${cta}</div></div>`;
+    el.innerHTML = `<div class="glass-card rounded-2xl border ${rc} overflow-hidden mb-4 fade-in"><div class="p-8 border-b border-white/5"><div class="flex items-center justify-between mb-4 flex-wrap gap-3"><div class="mono text-[10px] text-slate-500 uppercase tracking-widest">AI 分析報告</div><div class="flex items-center gap-3">${isSit ? `<div class="mono text-[10px] text-slate-500">風險指數 <span class="${rv} font-bold">${d.risk_score}/10</span></div>` : ''}<span class="mono text-sm font-black px-4 py-1.5 rounded-full border ${rc} ${rv}">${rl}</span></div></div><p class="text-sm text-slate-300 leading-relaxed">${esc(d.summary)}</p></div><div class="p-8 space-y-8">${items}${d.recommendations?.length ? `<div><div class="mono text-[10px] text-blue-400 uppercase tracking-widest mb-4">具體建議</div><ul class="space-y-2">${d.recommendations.map(r => `<li class="text-sm text-slate-400 flex gap-3 leading-relaxed"><span class="text-blue-400 shrink-0 mt-0.5">→</span>${esc(r)}</li>`).join('')}</ul></div>` : ''}${cta}</div></div>`;
 }
 
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 </script>
 </body>
 </html>
