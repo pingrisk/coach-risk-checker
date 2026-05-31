@@ -3,314 +3,894 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>教練保命符 | 2026 執業風險自動診斷系統</title>
-    <!-- 載入 Tailwind CSS -->
+    <title>教練風險軍師 PingRisk｜出事之前，你還有選擇</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 載入 Font Awesome 圖示 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-        body { 
-            font-family: 'Noto Sans TC', sans-serif; 
-            background-color: #0f172a; 
-            color: #f8fafc; 
-            scroll-behavior: smooth; 
+        :root {
+            --bg: #080f1a;
+            --surface: #0f1c2e;
+            --card: #132236;
+            --border: #1e3a5f;
+            --orange: #f97316;
+            --orange-dim: #c2601a;
+            --red: #ef4444;
+            --green: #22c55e;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --mono: 'DM Mono', monospace;
         }
-        .slate-card { background-color: #1e293b; border: 1px solid #334155; }
-        .orange-accent { color: #fb923c; }
-        .orange-bg { background-color: #f97316; }
-        .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none; }
-        .faq-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .faq-active .faq-content { max-height: 400px; }
-        .faq-active .faq-icon { transform: rotate(180deg); }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        /* Grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+        .mono { font-family: var(--mono); }
+ 
+        /* Nav */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: rgba(8,15,26,0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+ 
+        /* Hero */
+        .hero-bg {
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(249,115,22,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 60%, rgba(249,115,22,0.06) 0%, transparent 60%),
+                var(--bg);
+        }
+        .hero-line {
+            display: block;
+            overflow: hidden;
+        }
+        .hero-title {
+            font-size: clamp(2.2rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        .orange-word { color: var(--orange); }
+ 
+        /* Section titles */
+        .section-label {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            color: var(--orange);
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+ 
+        /* Steps */
+        .step-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .step-card:hover { border-color: var(--orange-dim); }
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--orange), transparent);
+        }
+        .step-num {
+            font-family: var(--mono);
+            font-size: 3rem;
+            font-weight: 500;
+            color: rgba(249,115,22,0.15);
+            line-height: 1;
+        }
+ 
+        /* Pricing */
+        .price-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+        }
+        .price-card.featured {
+            border-color: var(--orange);
+            background: linear-gradient(135deg, #132236 0%, #1a2d42 100%);
+        }
+        .price-tag {
+            font-family: var(--mono);
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: var(--orange);
+        }
+        .check-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .check-icon { color: var(--green); margin-top: 0.15rem; flex-shrink: 0; }
+        .dash-icon { color: var(--muted); margin-top: 0.15rem; flex-shrink: 0; }
+        .pending-badge {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            color: var(--orange);
+            background: rgba(249,115,22,0.1);
+            border: 1px solid rgba(249,115,22,0.25);
+            border-radius: 999px;
+            padding: 0.1rem 0.5rem;
+            display: inline-block;
+            margin-top: 0.2rem;
+        }
+ 
+        /* Checker */
+        .check-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            transition: all 0.2s;
+        }
+        .check-box:hover { border-color: var(--orange-dim); background: var(--card); }
+        input[type=checkbox]:checked + .check-box { border-color: var(--orange); }
+        input[type=checkbox] { display: none; }
+        .custom-cb {
+            width: 1.25rem; height: 1.25rem;
+            border: 2px solid var(--border);
+            border-radius: 0.25rem;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+        }
+        input[type=checkbox]:checked ~ .cb-content .custom-cb {
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+ 
+        /* Judgment cards */
+        .judgment-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .judgment-card:hover { border-color: #2d4a6b; }
+        .judgment-badge {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            display: inline-block;
+        }
+        .badge-lost { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+        .badge-won { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+        .badge-won-narrow { background: rgba(249,115,22,0.1); color: var(--orange); border: 1px solid rgba(249,115,22,0.2); }
+        .expand-panel { display: none; }
+        .expand-panel.open { display: block; }
+        .expand-btn {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--orange);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            display: flex; align-items: center; gap: 0.4rem;
+            transition: gap 0.2s;
+        }
+        .expand-btn:hover { gap: 0.7rem; }
+        .action-item {
+            display: flex; align-items: flex-start; gap: 0.6rem;
+            padding: 0.6rem 0.75rem;
+            background: rgba(249,115,22,0.05);
+            border: 1px solid rgba(249,115,22,0.12);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+ 
+        /* Law section */
+        .law-card {
+            background: linear-gradient(135deg, #0f1c2e 0%, #12243a 100%);
+            border: 1px solid #1e3a5f;
+            border-radius: 1.25rem;
+        }
+        .update-template {
+            background: rgba(249,115,22,0.05);
+            border: 1px dashed rgba(249,115,22,0.3);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+ 
+        /* CTA button */
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 0.9rem 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .btn-primary:hover {
+            background: #ea6c0a;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(249,115,22,0.3);
+        }
+        .btn-ghost {
+            background: transparent;
+            color: var(--orange);
+            border: 1px solid rgba(249,115,22,0.4);
+            border-radius: 999px;
+            padding: 0.9rem 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .btn-ghost:hover { background: rgba(249,115,22,0.08); border-color: var(--orange); }
+ 
+        /* Result box */
+        #resultBox {
+            display: none;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        #resultBox.risk-high { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
+        #resultBox.risk-mid  { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.25); }
+        #resultBox.risk-low  { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.25);  }
+ 
+        /* Divider */
+        .section-divider {
+            width: 3rem; height: 2px;
+            background: var(--orange);
+            margin: 0 auto 1.5rem;
+        }
+ 
+        /* Scroll fade-in */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-up.visible { opacity: 1; transform: none; }
+ 
+        /* About icon */
+        .about-icon {
+            width: 5rem; height: 5rem;
+            background: var(--card);
+            border: 2px solid var(--orange);
+            border-radius: 1.25rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            color: var(--orange);
+            flex-shrink: 0;
+        }
+ 
+        /* Footer */
+        footer { border-top: 1px solid var(--border); }
     </style>
 </head>
-<body class="text-slate-200">
-
-    <!-- 頂部防護條 -->
-    <div class="bg-slate-800 border-b border-slate-700 py-2 text-center text-[10px] md:text-xs text-orange-400 flex items-center justify-center gap-2 font-medium">
-        <i class="fas fa-user-shield text-[10px]"></i> 安全承諾：診斷數據僅在本地運算，您的執業細節絕不外傳。
+<body>
+ 
+<!-- ── NAV ─────────────────────────────────────────────────── -->
+<nav>
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div>
+            <span class="font-black text-white tracking-tight">教練風險軍師</span>
+            <span class="mono text-orange-400 text-xs ml-2">PingRisk</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="checker.html" class="mono text-xs text-slate-400 hover:text-orange-400 transition-colors hidden sm:block">AI 風險診斷 →</a>
+            <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary text-sm py-2 px-5">
+                免費開始
+            </a>
+        </div>
     </div>
-
-    <!-- Hero Section -->
-    <header class="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] pt-20 pb-32 px-6 text-center border-b border-slate-800">
-        <div class="max-w-4xl mx-auto">
-            <div class="inline-flex items-center gap-2 bg-orange-500/10 px-4 py-1 rounded-full text-orange-400 text-[10px] font-bold mb-6 tracking-widest border border-orange-500/30 uppercase">
-                實戰場域 × 運動醫學 × 判決分析
+</nav>
+ 
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero-bg min-h-screen flex items-center pt-24 pb-20 px-6 relative z-10">
+    <div class="max-w-4xl mx-auto">
+        <div class="mono text-xs text-orange-400 tracking-widest uppercase mb-8 flex items-center gap-2">
+            <span class="w-6 h-px bg-orange-400 inline-block"></span>
+            教練執業風險管理系統
+        </div>
+        <h1 class="hero-title mb-6">
+            <span class="hero-line">所有認真教課的教練，</span>
+            <span class="hero-line"><span class="orange-word">出事之前，你還有選擇。</span></span>
+        </h1>
+        <p class="text-slate-400 text-lg mb-10 max-w-xl leading-relaxed">
+            不要讓現在的熱情，變成未來的被告。
+        </p>
+        <div class="flex flex-wrap gap-4 items-center">
+            <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary">
+                我的教學值得被保護
+                <i class="fas fa-arrow-right text-sm"></i>
+            </a>
+            <a href="checker.html" class="btn-ghost">
+                先做免費風險診斷
+            </a>
+        </div>
+        <div class="mt-16 flex flex-wrap gap-8 text-sm text-slate-500">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                <span>50+ 教練已建立學員紀錄</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tighter">
-                別讓學員的意外，<br />變成您 <span class="orange-accent">一輩子的負債</span>
-            </h1>
-            <p class="text-slate-400 text-lg mb-12 max-w-2xl mx-auto leading-relaxed font-light">
-                機關 10 年人資資歷與第一線據點、到府教學實務。<br class="hidden md:block">
-                我不只教您防範傷害，更教您如何在高風險的「教學現場」全身而退。
-            </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button onclick="document.getElementById('checker').scrollIntoView({behavior: 'smooth'})" class="bg-[#f97316] text-white px-10 py-4 rounded-full font-bold hover:bg-orange-600 transition shadow-[0_0_20px_rgba(249,115,22,0.3)]">
-                    立即開始風險診斷
-                </button>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                <span>3 份真實台灣判決為設計依據</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                <span>逾12年人資×運動醫學</span>
             </div>
         </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto px-6 -mt-16 relative z-20 pb-20">
-        
-        <!-- 診斷器區塊 -->
-        <section id="checker" class="slate-card rounded-[2.5rem] shadow-2xl p-8 md:p-12 mb-20 animate-fade-in">
-            <div class="flex items-center gap-4 mb-10">
-                <div class="p-4 bg-orange-500/10 text-orange-500 rounded-3xl"><i class="fas fa-clipboard-check text-2xl"></i></div>
-                <h2 class="text-2xl font-bold">現場營運風險診斷</h2>
+    </div>
+</section>
+ 
+<!-- ── SECTION ② 運作方式 ───────────────────────────────────── -->
+<section id="how" class="py-24 px-6 relative z-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+            <div class="section-label">How it works</div>
+            <h2 class="text-3xl font-black tracking-tight mb-4">三個步驟，建立你的執業防護</h2>
+            <p class="text-slate-400 max-w-md mx-auto">每堂課2分鐘，讓紀錄替你說話。</p>
+        </div>
+ 
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Step 1 -->
+            <div class="step-card p-8 fade-up">
+                <div class="step-num mb-4">01</div>
+                <h3 class="text-lg font-bold mb-3">每堂課填2分鐘</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    學員姓名、訓練內容、本次強度、有無異常。完全免費，現在就開始。
+                </p>
+                <div class="mt-6 pt-6 border-t border-slate-800">
+                    <span class="mono text-xs text-orange-400">完全免費</span>
+                </div>
             </div>
-            <form id="riskForm" class="space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                    <div class="flex items-start gap-4 p-4 rounded-2xl hover:bg-slate-800 transition text-left">
-                        <input type="checkbox" id="q1" class="mt-1 w-6 h-6 accent-orange-500">
-                        <label for="q1" class="cursor-pointer">
-                            <span class="block text-lg font-bold">有簽署「傷病史書面調查」？</span>
-                            <span class="block text-sm text-slate-500 mt-1">口頭詢問沒效。若無紙本紀錄，出事時教練極難證明自己不知情。</span>
-                        </label>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 rounded-2xl hover:bg-slate-800 transition text-left">
-                        <input type="checkbox" id="q2" class="mt-1 w-6 h-6 accent-orange-500">
-                        <label for="q2" class="cursor-pointer">
-                            <span class="block text-lg font-bold">合約載明「安全中止權」？</span>
-                            <span class="block text-sm text-slate-500 mt-1">防止學生不適卻要硬練時，您喊停卻被反咬「拒絕服務」。</span>
-                        </label>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 rounded-2xl hover:bg-slate-800 transition text-left">
-                        <input type="checkbox" id="q3" class="mt-1 w-6 h-6 accent-orange-500">
-                        <label for="q3" class="cursor-pointer">
-                            <span class="block text-lg font-bold">留有「學員親簽」紀錄單？</span>
-                            <span class="block text-sm text-slate-500 mt-1">含當日動作、學員反饋。是「事發後」釐清因果關係的關鍵證據。</span>
-                        </label>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 rounded-2xl hover:bg-slate-800 transition text-left">
-                        <input type="checkbox" id="q4" class="mt-1 w-6 h-6 accent-orange-500">
-                        <label for="q4" class="cursor-pointer">
-                            <span class="block text-lg font-bold">取得「身體觸碰授權」？</span>
-                            <span class="block text-sm text-slate-500 mt-1">觸碰調整動作若無書面授權，極易演變為「性騷擾」指控。</span>
-                        </label>
-                    </div>
+ 
+            <!-- Step 2 -->
+            <div class="step-card p-8 fade-up" style="transition-delay:0.1s">
+                <div class="step-num mb-4">02</div>
+                <h3 class="text-lg font-bold mb-3">紀錄累積，防護自然形成</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    前29份完全免費。你的學員資料建在這裡，出事時你手上有東西說話。
+                </p>
+                <div class="mt-6 pt-6 border-t border-slate-800">
+                    <span class="mono text-xs text-orange-400">0 到 29 份　免費</span>
                 </div>
-                <button type="button" onclick="checkRisk()" class="w-full bg-[#f97316] text-white py-5 rounded-2xl font-bold text-xl hover:bg-orange-600 shadow-lg flex items-center justify-center gap-2 transition-all uppercase tracking-widest">
-                    產生分析報告 <i class="fas fa-arrow-right"></i>
-                </button>
-            </form>
-        </section>
-
-        <!-- 診斷結果區 -->
-        <div id="resultArea" class="hidden animate-fade-in mb-20">
-            <div class="slate-card rounded-[2.5rem] p-10 border-t-8" id="resultBorder">
-                <div class="flex items-center justify-between mb-8">
-                    <h3 id="resultTitle" class="text-3xl font-bold italic text-white text-center md:text-left"></h3>
-                    <span id="riskBadge" class="px-4 py-1 rounded-full text-[10px] font-black uppercase"></span>
+            </div>
+ 
+            <!-- Step 3 -->
+            <div class="step-card p-8 fade-up" style="transition-delay:0.2s">
+                <div class="step-num mb-4">03</div>
+                <h3 class="text-lg font-bold mb-3">第30份起，系統為你工作</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    NT$249/月。執業防火牆文件包全部解鎖，學員紀錄持續安全保存。
+                </p>
+                <div class="mt-6 pt-6 border-t border-slate-800">
+                    <span class="mono text-xs text-orange-400">第30份起　NT$249/月</span>
                 </div>
-                <div id="riskAnalysis" class="space-y-6 mb-12 text-slate-400 leading-relaxed text-lg text-left"></div>
             </div>
         </div>
-
-        <!-- 判決分析區 -->
-        <section id="judgmentSection" class="mb-24 px-4 text-left">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-white mb-4 italic underline underline-offset-8 decoration-orange-500/50">真實判決深度拆解</h2>
-                <p class="text-slate-500 italic">為什麼教練教得再好，法官依然判賠？</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="slate-card p-10 rounded-[2.5rem] border-l-4 border-l-red-500 relative overflow-hidden">
-                    <div class="bg-red-500/10 text-red-500 px-3 py-1 rounded-lg text-[10px] font-bold w-fit mb-4">判決字號：臺灣高雄地方法院 108 年度訴字第 494 號</div>
-                    <h4 class="text-xl font-bold mb-4 text-slate-100 text-left">告知義務：口頭問過沒效</h4>
-                    <p class="text-sm text-slate-400 leading-relaxed mb-6">學員在硬舉時發生腰椎受傷。教練雖主張有「口頭詢問」病史，但因**無法提出學員親簽的「風險告知書」**，法官認定教練未盡注意義務，最終判賠 65 萬餘元。</p>
-                    <div class="p-4 bg-slate-800 rounded-2xl text-xs text-orange-400 font-bold italic border border-orange-500/20">
-                        💡 核心點：沒留下「親簽證據」，專業就是零。
+ 
+        <div class="text-center mt-12 fade-up">
+            <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary">
+                免費開始建第一份紀錄
+                <i class="fas fa-arrow-right text-sm"></i>
+            </a>
+        </div>
+    </div>
+</section>
+ 
+<!-- ── SECTION ③ 定價 ────────────────────────────────────────── -->
+<section id="pricing" class="py-24 px-6 relative z-10">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+            <div class="section-label">Pricing</div>
+            <h2 class="text-3xl font-black tracking-tight mb-4">簡單、透明、從免費開始</h2>
+        </div>
+ 
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Free -->
+            <div class="price-card p-8 fade-up">
+                <div class="mono text-xs text-slate-500 uppercase tracking-widest mb-4">免費版</div>
+                <div class="price-tag mb-1">NT$0</div>
+                <p class="text-slate-500 text-sm mb-8">前29份學員紀錄</p>
+                <div class="space-y-1">
+                    <div class="check-item">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-300">學員紀錄系統（前29份）</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-300">課前風險診斷工具</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-minus dash-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-500">執業防火牆文件包</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-minus dash-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-500">受傷求償自救攻略包</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-minus dash-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-500">每月最新判決解析</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-minus dash-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-500">紀錄匯出</span>
                     </div>
                 </div>
-                <div class="slate-card p-10 rounded-[2.5rem] border-l-4 border-l-orange-500 relative overflow-hidden text-left">
-                    <div class="bg-orange-500/10 text-orange-500 px-3 py-1 rounded-lg text-[10px] font-bold w-fit mb-4">判決字號：臺灣臺北地方法院 109 年度簡字第 230 號</div>
-                    <h4 class="text-xl font-bold mb-4 text-slate-100">身體自主：輔助觸碰變騷擾</h4>
-                    <p class="text-sm text-slate-400 leading-relaxed mb-6">輔助動作時觸碰學員下背或臀部，遭指控性騷擾。法官重點在於：**「契約中是否事先載明觸碰範圍」**。若無書面授權，教練將陷於極難辯解的法律苦戰。</p>
-                    <div class="p-4 bg-slate-800 rounded-2xl text-xs text-orange-400 font-bold italic border border-orange-500/20">
-                        💡 核心點：一張「觸碰授權單」能擋掉 90% 的指控。
-                    </div>
+                <div class="mt-8">
+                    <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-ghost w-full justify-center">
+                        免費開始
+                    </a>
                 </div>
             </div>
-        </section>
-
-        <!-- 專業方案區 -->
-        <section id="plans" class="py-16 text-center">
-            <h2 class="text-4xl font-bold mb-4 text-white">數位防禦資產</h2>
-            <p class="text-slate-500 mb-16 italic text-center">一次設定終身受用，讓您的專業價值自動轉現</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
-                <!-- 方案 A -->
-                <div class="slate-card p-8 rounded-[2.5rem] border-2 border-orange-500 relative flex flex-col transform hover:scale-[1.02] transition-all">
-                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-orange-500 text-white px-6 py-1 rounded-full text-[10px] font-bold shadow-md tracking-widest uppercase text-center min-w-[150px]">首選：SOP 工具包</div>
-                    <h3 class="text-xl font-bold mb-2">2026 執業防火牆系統</h3>
-                    <div class="text-3xl font-black orange-accent mb-2">NT$ 2,480</div>
-                    <p class="text-[10px] text-orange-400/80 mb-6 bg-orange-500/5 p-2 rounded-lg italic font-bold leading-relaxed">
-                        ※ 主打「省事」：10 分鐘下載印出，立即完成防禦。
+ 
+            <!-- Subscription -->
+            <div class="price-card featured p-8 fade-up" style="transition-delay:0.1s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="mono text-xs text-orange-400 uppercase tracking-widest">訂閱版</div>
+                    <span class="mono text-xs bg-orange-500 text-white px-3 py-0.5 rounded-full">從第30份開始</span>
+                </div>
+                <div class="price-tag mb-1">NT$249<span class="text-lg text-slate-400 font-normal">/月</span></div>
+                <p class="text-slate-400 text-sm mb-8">學員紀錄已建立30份後啟用</p>
+                <div class="space-y-1">
+                    <div class="check-item">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-200">學員紀錄系統（無限儲存）</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-200">課前風險診斷工具</span>
+                    </div>
+                    <div class="check-item items-start">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <div>
+                            <span class="text-sm text-slate-200">執業防火牆系統</span>
+                            <div class="pending-badge mt-1">律師合規審查中，完成後訂閱者優先免費取得</div>
+                        </div>
+                    </div>
+                    <div class="check-item items-start">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <div>
+                            <span class="text-sm text-slate-200">受傷求償自救攻略包</span>
+                            <div class="pending-badge mt-1">律師合規審查中，完成後訂閱者優先免費取得</div>
+                        </div>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-200">每月最新判決解析</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-check check-icon text-sm mt-0.5"></i>
+                        <span class="text-sm text-slate-200">紀錄匯出（申請即提供）</span>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary w-full justify-center">
+                        我的教學值得被保護
+                        <i class="fas fa-arrow-right text-sm"></i>
+                    </a>
+                    <p class="text-center text-slate-600 text-xs mt-3 mono">先免費建紀錄，第30份後自動升級</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ 
+<!-- ── SECTION ④ 風險診斷 ────────────────────────────────────── -->
+<section id="checker" class="py-24 px-6 relative z-10">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-12 fade-up">
+            <div class="section-label">Free Diagnostic</div>
+            <h2 class="text-3xl font-black tracking-tight mb-4">現在，花30秒診斷你的缺口</h2>
+            <p class="text-slate-400">台灣判決告訴我們，這四件事決定教練能不能全身而退。</p>
+        </div>
+ 
+        <div class="space-y-3 mb-8 fade-up">
+            <label class="block cursor-pointer">
+                <input type="checkbox" id="q1" onchange="calcRisk()">
+                <div class="check-box p-5 flex items-start gap-4">
+                    <div class="custom-cb mt-0.5" id="cb1">
+                        <i class="fas fa-check text-white text-xs hidden" id="ck1"></i>
+                    </div>
+                    <div class="cb-content">
+                        <div class="font-bold text-sm mb-1">有讓學員填寫「PAR-Q+ 傷病調查表」並親簽？</div>
+                        <div class="text-slate-500 text-xs">口頭詢問沒效。若無紙本紀錄，出事時教練極難證明自己不知情。</div>
+                    </div>
+                </div>
+            </label>
+            <label class="block cursor-pointer">
+                <input type="checkbox" id="q2" onchange="calcRisk()">
+                <div class="check-box p-5 flex items-start gap-4">
+                    <div class="custom-cb mt-0.5" id="cb2">
+                        <i class="fas fa-check text-white text-xs hidden" id="ck2"></i>
+                    </div>
+                    <div class="cb-content">
+                        <div class="font-bold text-sm mb-1">合約載明「安全中止權」？</div>
+                        <div class="text-slate-500 text-xs">防止學員不適卻硬練時，你喊停卻被反咬「拒絕服務」。</div>
+                    </div>
+                </div>
+            </label>
+            <label class="block cursor-pointer">
+                <input type="checkbox" id="q3" onchange="calcRisk()">
+                <div class="check-box p-5 flex items-start gap-4">
+                    <div class="custom-cb mt-0.5" id="cb3">
+                        <i class="fas fa-check text-white text-xs hidden" id="ck3"></i>
+                    </div>
+                    <div class="cb-content">
+                        <div class="font-bold text-sm mb-1">每堂課留有「課程紀錄單（學員課後親簽）」？</div>
+                        <div class="text-slate-500 text-xs">含當日動作、強度、學員反饋。是事發後釐清因果關係的關鍵證據。</div>
+                    </div>
+                </div>
+            </label>
+            <label class="block cursor-pointer">
+                <input type="checkbox" id="q4" onchange="calcRisk()">
+                <div class="check-box p-5 flex items-start gap-4">
+                    <div class="custom-cb mt-0.5" id="cb4">
+                        <i class="fas fa-check text-white text-xs hidden" id="ck4"></i>
+                    </div>
+                    <div class="cb-content">
+                        <div class="font-bold text-sm mb-1">取得學員「身體觸碰授權」書面同意？</div>
+                        <div class="text-slate-500 text-xs">觸碰調整動作若無書面授權，極易引發法律爭議。</div>
+                    </div>
+                </div>
+            </label>
+        </div>
+ 
+        <div id="resultBox" class="fade-up">
+            <div id="resultTitle" class="font-bold text-lg mb-2"></div>
+            <div id="resultText" class="text-sm text-slate-300 mb-5 leading-relaxed"></div>
+            <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary text-sm">
+                免費開始建學員紀錄
+                <i class="fas fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+    </div>
+</section>
+ 
+<!-- ── SECTION ⑤ 真實判決 ────────────────────────────────────── -->
+<section id="judgments" class="py-24 px-6 relative z-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16 fade-up">
+            <div class="section-label">Real Cases</div>
+            <h2 class="text-3xl font-black tracking-tight mb-4">真實判決深度拆解</h2>
+            <p class="text-slate-400">有紀錄的教練，和沒有的教練，在法庭上結果差很多。</p>
+        </div>
+ 
+        <div class="space-y-5">
+            <!-- 判決 1：台中109消7 教練敗訴 -->
+            <div class="judgment-card fade-up">
+                <div class="p-7">
+                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                        <span class="judgment-badge badge-lost">教練敗訴</span>
+                        <span class="mono text-slate-500 text-xs">臺灣臺中地方法院 109 年度消字第 7 號</span>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">告知義務：口頭問過，沒效</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">
+                        學員硬舉訓練中腰椎受傷。教練雖主張有口頭詢問病史，但因無法提出學員親簽的書面健康評估紀錄，法官認定教練未盡注意義務，判定過失成立。
                     </p>
-                    <ul class="text-sm space-y-3 mb-10 flex-grow text-slate-400">
-                        <li><i class="fas fa-check-circle orange-accent mr-2"></i> PAR-Q+ 醫學級傷病調查表 (含備註教學)</li>
-                        <li><i class="fas fa-check-circle orange-accent mr-2"></i> 身體觸碰授權與隱私告知書</li>
-                        <li><i class="fas fa-check-circle orange-accent mr-2"></i> 課程紀錄單 (法官認可證據格式)</li>
-                        <li><i class="fas fa-check-circle orange-accent mr-2"></i> 運動風險與安全中止條款</li>
-                        <li class="pt-4 text-xs font-bold text-orange-300 italic">✓ 數位產品購買後永久下載使用</li>
-                    </ul>
-                    <button onclick="openModal('order')" class="w-full orange-bg text-white py-4 rounded-2xl font-bold shadow-lg hover:brightness-110 transition uppercase tracking-widest">立即獲取保命符</button>
+                    <button class="expand-btn" onclick="toggleJudgment('j1')">
+                        查看完整解析 <span class="arrow">→</span>
+                    </button>
                 </div>
-                <!-- 方案 B -->
-                <div class="slate-card p-8 rounded-[2.5rem] flex flex-col transform hover:scale-[1.02] transition-all text-left">
-                    <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-slate-700 text-white px-6 py-1 rounded-full text-[10px] font-bold shadow-md tracking-widest uppercase text-center">遭遇爭議必備</div>
-                    <h3 class="text-xl font-bold mb-2 text-white">受傷求償自救攻略包</h3>
-                    <div class="text-3xl font-black mb-6 text-slate-100">NT$ 1,980</div>
-                    <ul class="text-sm space-y-4 mb-10 flex-grow text-slate-400">
-                        <li><i class="fas fa-file-pdf orange-accent mr-2"></i> 收到存證信函的第一小時應對指南</li>
-                        <li><i class="fas fa-file-pdf orange-accent mr-2"></i> 關鍵證據蒐集與封存查檢表</li>
-                        <li><i class="fas fa-file-pdf orange-accent mr-2"></i> 調解現場的「過失比例」攻防話術</li>
-                        <li><i class="fas fa-file-pdf orange-accent mr-2"></i> 判決書白話翻譯與案例對標</li>
-                    </ul>
-                    <button onclick="openModal('order')" class="w-full border-2 border-orange-500 text-orange-500 py-4 rounded-2xl font-bold hover:bg-orange-500/5 transition">立即獲取攻略包</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 真實自介：強化故事感與現場專業 -->
-        <section class="slate-card p-10 md:p-14 rounded-[3.5rem] flex flex-col md:flex-row items-center gap-12 text-left border-2 border-slate-800">
-            <div class="w-48 h-48 bg-slate-800 rounded-3xl shrink-0 flex items-center justify-center text-orange-500 shadow-inner border border-slate-700 relative overflow-hidden">
-                <i class="fas fa-person-walking-with-cane text-6xl relative z-10"></i>
-                <div class="absolute inset-0 bg-orange-500/5"></div>
-            </div>
-            <div class="text-sm">
-                <h3 class="text-2xl font-bold mb-6 orange-accent italic tracking-tight font-bold">我是硬平（Ping Risk）。</h3>
-                <div class="space-y-4 text-slate-400 leading-relaxed text-base font-light">
-                    <p>在衛政機關與公立醫院服務的十年後，我選擇走出體制，投入社區據點帶長輩運動，並深入家庭進行到府肌力訓練。</p>
-                    <p>這段「接地氣」的教學經驗讓我發現，現場教學不只是教好動作而已。除了學員本身的身體風險，**場地的動線安全、器材的維護與清潔、動作選擇的適當性，甚至是與家屬的溝通及照顧細節**，全部都是潛在的法律雷區。</p>
-                    <p>我看到許多認真的教練滿懷熱忱，卻在風險管理上感到「有心無力」，甚至不知道風險躲在哪。我創立這個平台，是想守護那些努力教學，卻還不知道該怎麼保護自己的夥伴。硬是陪你把崎嶇路走平。</p>
+                <div id="j1" class="expand-panel border-t border-slate-800 p-7">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">案情摘要</div>
+                            <p class="text-sm text-slate-300 leading-relaxed">學員進行硬舉訓練時腰椎受傷求償。教練僅有入場記錄，無書面健康評估，無親簽文件。</p>
+                        </div>
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">法院關鍵認定</div>
+                            <p class="text-sm text-slate-300 leading-relaxed">法官問：「你如何評估學員體能？」教練只有口頭說明，無書面憑據。法院認定教練「未盡職業上應有之注意義務」，過失責任成立。</p>
+                        </div>
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">教練必知3件事</div>
+                            <div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">01</span><span class="text-sm text-slate-300">口頭問過不算數，法庭上你說了算不了</span></div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">02</span><span class="text-sm text-slate-300">PAR-Q+ 傷病調查表開課前必須完成並親簽</span></div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">03</span><span class="text-sm text-slate-300">書面紀錄是你在法庭上說話的唯一資格</span></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-500 py-20 px-8 text-center text-xs">
-        <div class="flex justify-center gap-8 mb-8 underline underline-offset-8 decoration-slate-800">
-            <button onclick="openModal('tos')" class="hover:text-white transition-colors">服務條款</button>
-            <button onclick="openModal('refund')" class="hover:text-white transition-colors">退費與隱私政策</button>
+ 
+            <!-- 判決 2：士林114聲自72 教練勝訴 -->
+            <div class="judgment-card fade-up">
+                <div class="p-7">
+                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                        <span class="judgment-badge badge-won">教練勝訴</span>
+                        <span class="mono text-slate-500 text-xs">臺灣士林地方法院 114 年度聲自字第 72 號</span>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">紀錄救了教練：有書面 vs 一無所有</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">
+                        65歲學員站姿提踵訓練，第3組時腰椎骨折，家屬提告。教練因提出 InBody 評估紀錄、最輕重量（15kg）起訓記錄、組間10分鐘休息記錄，法院認定「難認教練安排有何不當」，聲請全數駁回。
+                    </p>
+                    <button class="expand-btn" onclick="toggleJudgment('j2')">
+                        查看完整解析 <span class="arrow">→</span>
+                    </button>
+                </div>
+                <div id="j2" class="expand-panel border-t border-slate-800 p-7">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">案情摘要</div>
+                            <p class="text-sm text-slate-300 leading-relaxed">高齡學員訓練中骨折，家屬提起刑事過失傷害告訴。教練有完整的體況評估與訓練強度紀錄。</p>
+                        </div>
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">法院關鍵認定</div>
+                            <p class="text-sm text-slate-300 leading-relaxed">法院說：「教練有 InBody 紀錄、從最輕重量起訓、設有組間休息，難認安排有何不當。」書面紀錄直接構成教練「已盡注意義務」的認定基礎。</p>
+                        </div>
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">教練必知3件事</div>
+                            <div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">01</span><span class="text-sm text-slate-300">InBody 或體況評估數據，課前必須記錄</span></div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">02</span><span class="text-sm text-slate-300">從最輕重量起訓，並在課程紀錄單寫明依據</span></div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">03</span><span class="text-sm text-slate-300">組間休息時間記錄下來，法官會問的</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+            <!-- 判決 3：台中113訴1196 教練勝訴但注意 -->
+            <div class="judgment-card fade-up">
+                <div class="p-7">
+                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                        <span class="judgment-badge badge-won-narrow">教練勝訴，但警示</span>
+                        <span class="mono text-slate-500 text-xs">臺灣臺中地方法院 113 年度訴字第 1196 號</span>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">課後「好意」的50萬風險：授權範圍外就是灰色地帶</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-5">
+                        教練課程結束後「好意」協助學員放鬆頸椎，學員事後頸部症狀求償50萬。教練因有監視器畫面佐證，加上學員原有舊傷，最終勝訴。但法院確認：課外服務若無書面授權，進入法律灰色地帶。
+                    </p>
+                    <button class="expand-btn" onclick="toggleJudgment('j3')">
+                        查看完整解析 <span class="arrow">→</span>
+                    </button>
+                </div>
+                <div id="j3" class="expand-panel border-t border-slate-800 p-7">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">案情摘要</div>
+                            <p class="text-sm text-slate-300 leading-relaxed">課後放鬆服務引發糾紛，學員求償50萬＋退費近7萬。雖然最終勝訴，但此案顯示課外服務的法律風險極高。</p>
+                        </div>
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">法院關鍵認定</div>
+                            <p class="text-sm text-slate-300 leading-relaxed">法院確認教練動作與學員頸部扭挫傷有因果關係，但因學員原有舊傷且教練無法預見，認定無過失。勝訴關鍵：監視器畫面。沒有監視器，結果可能相反。</p>
+                        </div>
+                        <div>
+                            <div class="mono text-xs text-slate-500 uppercase tracking-wider mb-3">教練必知3件事</div>
+                            <div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">01</span><span class="text-sm text-slate-300">課後任何「好意服務」都需要書面授權，不然就是灰色地帶</span></div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">02</span><span class="text-sm text-slate-300">場地監視器是救命稻草，確保它正常運作</span></div>
+                                <div class="action-item"><span class="text-orange-400 text-xs font-bold mono">03</span><span class="text-sm text-slate-300">合約範圍外的服務，最好不做；要做，白紙黑字</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="flex items-center justify-center gap-2 mb-4 text-orange-400 font-bold tracking-widest uppercase">
-            <i class="fas fa-envelope"></i> coachriskchecker@gmail.com
-        </div>
-        <p class="opacity-40 tracking-widest uppercase italic font-bold">© 2026 硬平 | 運動醫學導向的營運風險專家</p>
-    </footer>
-
-    <!-- 彈窗系統 -->
-    <div id="modalOverlay" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal()"></div>
-        <div class="slate-card rounded-[2.5rem] w-full max-w-xl max-h-[85vh] overflow-y-auto p-12 relative z-10 shadow-2xl text-left border border-slate-700">
-            <button onclick="closeModal()" class="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors"><i class="fas fa-times text-2xl"></i></button>
-            <div id="modalContent"></div>
+ 
+        <!-- 運動防護師法議題關注區 -->
+        <!-- ════════════════════════════════════════════════════════
+             運動防護師法議題關注區
+             更新方式：修改下方 law-card 內的文字即可
+             每次有新進展，更新 <span class="law-date"> 和 <p class="law-content"> 的內容
+             ════════════════════════════════════════════════════════ -->
+        <div class="law-card p-8 mt-10 fade-up">
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+                <div class="mono text-xs text-orange-400 uppercase tracking-widest">議題關注</div>
+                <span class="mono text-xs bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-0.5 rounded-full">運動防護師法草案</span>
+                <span class="mono text-xs text-slate-500 law-date">最後更新：2026.05.29</span>
+            </div>
+            <h3 class="font-bold text-lg mb-3">運動防護師法：順風，不是逆風</h3>
+            <p class="text-slate-300 text-sm leading-relaxed mb-5 law-content">
+                立法院正在審議運動防護師法草案，議題明確包含「健身產業影響」。草案中「體能檢測、肌力訓練、功能訓練、訓練計畫調整」等文字，正在討論是否影響一般健身教練的工作空間。
+            </p>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="bg-red-500/5 border border-red-500/15 rounded-xl p-5">
+                    <div class="text-red-400 text-sm font-bold mb-2">草案通過後，教練面臨的問題</div>
+                    <ul class="text-slate-400 text-xs space-y-1.5">
+                        <li>• 業務範圍可能被明確界定，無書面文件難以自保</li>
+                        <li>• 執業風險從「被學員告」升級為「被主管機關裁罰」</li>
+                        <li>• 無法自證服務屬於「動作指導」而非「醫療復健」</li>
+                    </ul>
+                </div>
+                <div class="bg-green-500/5 border border-green-500/15 rounded-xl p-5">
+                    <div class="text-green-400 text-sm font-bold mb-2">文件包的角色</div>
+                    <ul class="text-slate-400 text-xs space-y-1.5">
+                        <li>• 明確界定「動作指導與優化」vs「醫療復健」</li>
+                        <li>• 服務定性聲明讓教練在法規灰色地帶自保</li>
+                        <li>• 草案通過 = 文件包從「保險」變「必備」</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 新增議題更新模板（複製此區塊新增更多進展）
+            <div class="mt-5 pt-5 border-t border-slate-800">
+                <div class="mono text-xs text-slate-500 mb-2">YYYY.MM.DD 最新進展</div>
+                <p class="text-slate-300 text-sm leading-relaxed">在此填寫最新立法進展或相關新聞</p>
+            </div>
+            -->
         </div>
     </div>
-
-    <script>
-        const formID = "xrernado"; 
-
-        function checkRisk() {
-            const qs = ['q1', 'q2', 'q3', 'q4'].map(id => document.getElementById(id).checked);
-            const score = qs.filter(v => v).length;
-            const area = document.getElementById('resultArea');
-            const analysis = document.getElementById('riskAnalysis');
-            const badge = document.getElementById('riskBadge');
-            const title = document.getElementById('resultTitle');
-            const border = document.getElementById('resultBorder');
-
-            area.classList.remove('hidden');
-            if (score <= 1) {
-                badge.innerText = "Critical Risk"; badge.className = "px-4 py-1 rounded-full text-[10px] bg-red-500 text-white font-black";
-                border.style.borderColor = "#ef4444";
-                title.innerText = "⚠️ 警告：您的執業防線處於「高度暴露」狀態";
-                analysis.innerHTML = `<p>診斷結果：您目前主要依賴學員的口頭信任。在法律實務中，這是最脆弱的防線。一旦進入訴訟，法官會認定教練具備高度專業知識，應對現場風險負擔最大「注意義務」。缺乏書面證據，您極大機率須承擔 70% 以上的受傷賠償額。</p>`;
-            } else if (score <= 3) {
-                badge.innerText = "Moderate Risk"; badge.className = "px-4 py-1 rounded-full text-[10px] bg-yellow-500 text-slate-900 font-black";
-                border.style.borderColor = "#eab308";
-                title.innerText = "🟡 提示：已有防禦基礎，但存有致命灰色地帶";
-                analysis.innerHTML = `<p>您雖具備基本保護意識，但在「實質證據證據鏈」或「觸碰細節授權」上仍存在模糊空間。這類灰色地帶往往是律師攻擊教練的首選熱點，容易被判賠部分金額。</p>`;
-            } else {
-                badge.innerText = "Secure"; badge.className = "px-4 py-1 rounded-full text-[10px] bg-emerald-500 text-white font-black";
-                border.style.borderColor = "#10b981";
-                title.innerText = "🟢 恭喜：您具備專業營運級防禦規格";
-                analysis.innerHTML = `<p>這顯示您不僅懂教學，更懂管理。良好的書面紀錄是保護教練職業生涯的基石。建議維持這套行政規格，並隨最新判決滾動更新。</p>`;
-            }
-            area.scrollIntoView({ behavior: 'smooth' });
+</section>
+ 
+<!-- ── SECTION ⑥ 關於硬平 ────────────────────────────────────── -->
+<section id="about" class="py-24 px-6 relative z-10">
+    <div class="max-w-4xl mx-auto">
+        <div class="section-divider"></div>
+        <div class="flex flex-col md:flex-row gap-10 items-start fade-up">
+            <div class="about-icon">
+                <i class="fas fa-person-walking-with-cane"></i>
+            </div>
+            <div>
+                <div class="mono text-xs text-orange-400 uppercase tracking-widest mb-3">關於創辦人</div>
+                <h2 class="text-2xl font-black mb-2">我是硬平 Ying Ping。</h2>
+                <p class="text-orange-400 text-sm mb-6 font-medium">硬是陪你把崎嶇路走平。</p>
+                <div class="space-y-4 text-slate-400 text-sm leading-relaxed">
+                    <p>在衛政機關與公立醫院服務逾12年後，我選擇走出體制，投入社區帶長輩運動，並深入家庭進行到府肌力訓練。</p>
+                    <p>這段「接地氣」的教學經驗讓我發現，認真帶課的教練最缺的不是技術，是保護自己的工具。</p>
+                    <p>我看到許多認真的教練滿懷熱忱，卻在風險管理上感到有心無力，甚至不知道風險躲在哪。</p>
+                    <p class="text-slate-300">教練風險軍師存在的理由，就是讓每一個認真帶課的人，出事之前，還有選擇。</p>
+                </div>
+                <div class="flex flex-wrap gap-3 mt-8">
+                    <span class="mono text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300">衛政機關＋公立醫院 逾12年人資</span>
+                    <span class="mono text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300">運動醫學學位＋NASM-CPT</span>
+                    <span class="mono text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300">親自到府帶長輩課</span>
+                    <span class="mono text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-slate-300">AI 工具獲公部門主管採用</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ 
+<!-- ── FINAL CTA ──────────────────────────────────────────────── -->
+<section class="py-24 px-6 relative z-10">
+    <div class="max-w-2xl mx-auto text-center fade-up">
+        <h2 class="text-3xl font-black tracking-tight mb-4">
+            出事之前，<span class="orange-word">你還有選擇。</span>
+        </h2>
+        <p class="text-slate-400 mb-10">50 位教練已經開始建立他們的防護紀錄。</p>
+        <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary text-base px-10 py-4">
+            我的教學值得被保護
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+ 
+<!-- ── FOOTER ────────────────────────────────────────────────── -->
+<footer class="py-12 px-6 relative z-10">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start gap-8 mb-10">
+            <div>
+                <div class="font-black text-white mb-1">教練風險軍師</div>
+                <div class="mono text-xs text-slate-500">PingRisk</div>
+            </div>
+            <div class="flex flex-wrap gap-8 text-sm text-slate-500">
+                <a href="#how" class="hover:text-white transition-colors">運作方式</a>
+                <a href="#pricing" class="hover:text-white transition-colors">定價</a>
+                <a href="#checker" class="hover:text-white transition-colors">風險診斷</a>
+                <a href="#judgments" class="hover:text-white transition-colors">判決解析</a>
+                <a href="checker.html" class="hover:text-orange-400 transition-colors">AI 診斷工具</a>
+            </div>
+        </div>
+        <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-slate-800 gap-4">
+            <p class="mono text-xs text-slate-600">© 2026 硬平 Ying Ping｜PingRisk　本網站提供行政管理建議，不構成正式法律意見。</p>
+            <a href="mailto:coachriskchecker@gmail.com" class="mono text-xs text-slate-500 hover:text-orange-400 transition-colors flex items-center gap-2">
+                <i class="fas fa-envelope"></i>
+                coachriskchecker@gmail.com
+            </a>
+        </div>
+    </div>
+</footer>
+ 
+<script>
+// ── Checkbox interaction ──────────────────────────────────────
+document.querySelectorAll('input[type=checkbox]').forEach((cb, i) => {
+    cb.addEventListener('change', () => {
+        const n = i + 1;
+        const cbEl = document.getElementById(`cb${n}`);
+        const ckEl = document.getElementById(`ck${n}`);
+        if (cbEl && ckEl) {
+            cbEl.style.background = cb.checked ? '#f97316' : '';
+            cbEl.style.borderColor = cb.checked ? '#f97316' : '';
+            ckEl.classList.toggle('hidden', !cb.checked);
         }
-
-        function openModal(type) {
-            const overlay = document.getElementById('modalOverlay');
-            const content = document.getElementById('modalContent');
-            document.body.classList.add('modal-active');
-            overlay.classList.remove('hidden');
-
-            const templates = {
-                order: `
-                    <div class="animate-fade-in text-left">
-                        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3 orange-accent font-bold text-white"><i class="fas fa-credit-card"></i> 獲取執業防禦資產</h2>
-                        <div class="bg-orange-500/10 p-5 rounded-2xl text-xs text-orange-400 mb-8 leading-relaxed">
-                            請填寫資訊，我們將寄送匯款帳號。確認後，數位產品包將於 24 小時內透過 Email 寄至您的信箱。
-                        </div>
-                        <form action="https://formspree.io/f/${formID}" method="POST" class="space-y-4 text-sm text-left">
-                            <input type="hidden" name="_subject" value="新的教練防禦產品訂購單">
-                            <div><label class="block mb-1 text-slate-500 font-bold uppercase text-[10px]">單位/訂購人姓名 (開立收據用)</label><input type="text" name="訂購人" class="w-full bg-slate-800 border-2 border-slate-700 p-3 rounded-xl text-white outline-none focus:border-orange-500" required></div>
-                            <div><label class="block mb-1 text-slate-500 font-bold uppercase text-[10px]">Email (接收檔案)</label><input type="email" name="Email" class="w-full bg-slate-800 border-2 border-slate-700 p-3 rounded-xl text-white outline-none focus:border-orange-500" required></div>
-                            <button type="submit" class="w-full orange-bg text-white py-4 rounded-xl font-bold shadow-lg mt-4 uppercase tracking-widest">確認並索取匯款資訊</button>
-                        </form>
-                    </div>`,
-                tos: `
-                    <div class="animate-fade-in space-y-6 text-left">
-                        <h2 class="text-2xl font-bold border-b border-slate-700 pb-4 text-white">服務條款 (Terms)</h2>
-                        <div class="text-sm text-slate-400 leading-relaxed space-y-6">
-                            <section>
-                                <p class="font-bold text-slate-200 mb-2 text-lg underline underline-offset-4 decoration-orange-500">一、 專業定位與責任界定</p>
-                                <p>「教練保命符」所提供之診斷工具、合約範本、自救攻略及相關諮詢，係基於 2026 年最新執業實務及公開判決趨勢之「行政管理建議」。本服務旨在協助教練完善行政流程以降低爭議風險，不構成律師正式法律訴訟代理或執業律師之法律意見。使用者應依個別教學情況進行最終確認與調整。</p>
-                            </section>
-                            <section>
-                                <p class="font-bold text-slate-200 mb-2 text-lg underline underline-offset-4 decoration-orange-500">二、 智慧財產權與授權範圍</p>
-                                <p>本站提供之所有合約範本、自救攻略、紀錄單格式均受著作權法保護。購買之產品僅限於購買者本人或購買單位之「執業範圍內部重複使用」。嚴禁未經授權之轉售、公開散佈、分享予第三方顧問公司作為營利用途。違反者將追究相關法律責任。</p>
-                            </section>
-                            <section>
-                                <p class="font-bold text-slate-200 mb-2 text-lg underline underline-offset-4 decoration-orange-500">三、 內容更新承諾</p>
-                                <p>因法規與判決趨勢具有動態性，我們將致力於維護範本之時效性。若因國家勞政、衛政法規發生重大更迭導致內容不合時宜，我們將針對已購買客戶主動發送更新通知，並提供相應之優惠更新方案。</p>
-                            </section>
-                        </div>
-                    </div>`,
-                refund: `
-                    <div class="animate-fade-in space-y-6 text-left">
-                        <h2 class="text-2xl font-bold border-b border-slate-700 pb-4 flex items-center gap-3 text-white font-bold"><i class="fas fa-shield-halved text-orange-500"></i> 退費與隱私政策</h2>
-                        <div class="text-sm text-slate-400 leading-relaxed space-y-6">
-                            <section>
-                                <p class="font-bold text-slate-200 mb-2 text-lg underline underline-offset-4 decoration-teal-500">一、 退費政策 (Refund Policy)</p>
-                                <ul class="list-disc pl-5 space-y-2">
-                                    <li><strong>數位資產產品：</strong> 因「防火牆系統」及「自救攻略包」具即時交付性質且極易複製之內容，一旦寄送檔案下載連結至您的電子信箱，屬通訊交易解除權合理例外情事，恕不接受退費請求。</li>
-                                    <li><strong>諮詢服務：</strong> 預約後若須更換時間，請於 24 小時前提出；若須取消，於時間 24 小時前提出可獲全額退費（扣除銀行轉帳手續費）。</li>
-                                </ul>
-                            </section>
-                            <section>
-                                <p class="font-bold text-slate-200 mb-2 text-lg underline underline-offset-4 decoration-teal-500">二、 隱私權與數據安全</p>
-                                <p>我們極度重視教練之執業隱私與受教資料。本站「自動診斷工具」採 100% 本地化運算技術，您勾選的執業細節僅供瀏覽器當下解析，絕對不存儲於雲端伺服器或外洩。您的聯繫 Email 僅用於服務交付與必要的法規更新通知。</p>
-                            </section>
-                        </div>
-                    </div>`
-            };
-            content.innerHTML = templates[type];
+    });
+});
+ 
+// ── Risk calculator ───────────────────────────────────────────
+function calcRisk() {
+    const qs = ['q1','q2','q3','q4'].map(id => document.getElementById(id).checked);
+    const score = qs.filter(v => v).length;
+    const box = document.getElementById('resultBox');
+    const title = document.getElementById('resultTitle');
+    const text = document.getElementById('resultText');
+ 
+    box.style.display = 'block';
+    box.className = '';
+ 
+    if (score === 0) {
+        box.classList.add('risk-high');
+        title.innerHTML = '<span style="color:#ef4444">⚠ 高度暴露：你目前沒有任何書面保護</span>';
+        text.textContent = '台灣判決告訴我們，一無書面紀錄的教練，出事時幾乎沒有辯護空間。現在開始建立學員紀錄是第一步。';
+    } else if (score <= 2) {
+        box.classList.add('risk-mid');
+        title.innerHTML = '<span style="color:#f97316">🟡 有基礎，但存在致命缺口</span>';
+        text.textContent = '你已有部分防護意識，但缺漏的地方往往是對方律師攻擊的首選。建議盡快補齊書面系統。';
+    } else if (score === 3) {
+        box.classList.add('risk-mid');
+        title.innerHTML = '<span style="color:#f97316">🟡 接近完整，差一步</span>';
+        text.textContent = '你已做了大部分該做的事。把最後一個缺口補齊，讓整套系統閉環。';
+    } else {
+        box.classList.add('risk-low');
+        title.innerHTML = '<span style="color:#22c55e">🟢 專業級防護規格</span>';
+        text.textContent = '你不只懂教學，更懂管理。建議持續維持這套行政規格，並透過定期記錄強化你的防護紀錄鏈。';
+    }
+}
+ 
+// ── Judgment expand/collapse ──────────────────────────────────
+function toggleJudgment(id) {
+    const panel = document.getElementById(id);
+    const btn = panel.previousElementSibling;
+    const arrow = btn.querySelector('.arrow');
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open');
+    btn.innerHTML = isOpen
+        ? '查看完整解析 <span class="arrow">→</span>'
+        : '收起解析 <span class="arrow">↑</span>';
+}
+ 
+// ── Scroll fade-in ────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
         }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.add('hidden');
-            document.body.classList.remove('modal-active');
-        }
-
-        function toggleFaq(el) { el.classList.toggle('faq-active'); }
-    </script>
+    });
+}, { threshold: 0.1 });
+ 
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+ 
+// ── Smooth scroll for nav links ───────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+</script>
 </body>
 </html>
