@@ -38,7 +38,7 @@
             z-index: 0;
         }
         .mono { font-family: var(--mono); }
-
+ 
         /* Nav */
         nav {
             position: fixed; top: 0; width: 100%; z-index: 100;
@@ -46,7 +46,7 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
         }
-
+ 
         /* Hero */
         .hero-bg {
             background:
@@ -65,7 +65,7 @@
             letter-spacing: -0.02em;
         }
         .orange-word { color: var(--orange); }
-
+ 
         /* Section titles */
         .section-label {
             font-family: var(--mono);
@@ -75,7 +75,7 @@
             text-transform: uppercase;
             margin-bottom: 0.75rem;
         }
-
+ 
         /* Steps */
         .step-card {
             background: var(--card);
@@ -100,7 +100,7 @@
             color: rgba(249,115,22,0.15);
             line-height: 1;
         }
-
+ 
         /* Pricing */
         .price-card {
             background: var(--card);
@@ -132,7 +132,7 @@
             display: inline-block;
             margin-top: 0.2rem;
         }
-
+ 
         /* Checker */
         .check-box {
             background: var(--surface);
@@ -155,7 +155,7 @@
             background: var(--orange);
             border-color: var(--orange);
         }
-
+ 
         /* Judgment cards */
         .judgment-card {
             background: var(--card);
@@ -198,7 +198,7 @@
             border-radius: 0.5rem;
             margin-bottom: 0.5rem;
         }
-
+ 
         /* Law section */
         .law-card {
             background: linear-gradient(135deg, #0f1c2e 0%, #12243a 100%);
@@ -214,7 +214,7 @@
             font-size: 0.7rem;
             color: var(--muted);
         }
-
+ 
         /* CTA button */
         .btn-primary {
             background: var(--orange);
@@ -252,7 +252,7 @@
             font-weight: 600;
         }
         .btn-ghost:hover { background: rgba(249,115,22,0.08); border-color: var(--orange); }
-
+ 
         /* Result box */
         #resultBox {
             display: none;
@@ -263,14 +263,14 @@
         #resultBox.risk-high { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); }
         #resultBox.risk-mid  { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.25); }
         #resultBox.risk-low  { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.25);  }
-
+ 
         /* Divider */
         .section-divider {
             width: 3rem; height: 2px;
             background: var(--orange);
             margin: 0 auto 1.5rem;
         }
-
+ 
         /* Scroll fade-in */
         .fade-up {
             opacity: 0;
@@ -278,7 +278,7 @@
             transition: opacity 0.6s ease, transform 0.6s ease;
         }
         .fade-up.visible { opacity: 1; transform: none; }
-
+ 
         /* About icon */
         .about-icon {
             width: 5rem; height: 5rem;
@@ -290,13 +290,13 @@
             color: var(--orange);
             flex-shrink: 0;
         }
-
+ 
         /* Footer */
         footer { border-top: 1px solid var(--border); }
     </style>
 </head>
 <body>
-
+ 
 <!-- ── NAV ─────────────────────────────────────────────────── -->
 <nav>
     <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -312,7 +312,7 @@
         </div>
     </div>
 </nav>
-
+ 
 <!-- ── HERO ─────────────────────────────────────────────────── -->
 <section class="hero-bg min-h-screen flex items-center pt-24 pb-20 px-6 relative z-10">
     <div class="max-w-4xl mx-auto">
@@ -352,7 +352,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ── SECTION ② 運作方式 ───────────────────────────────────── -->
 <section id="how" class="py-24 px-6 relative z-10">
     <div class="max-w-5xl mx-auto">
@@ -361,7 +361,7 @@
             <h2 class="text-3xl font-black tracking-tight mb-4">三個步驟，建立你的執業防護</h2>
             <p class="text-slate-400 max-w-md mx-auto">每堂課2分鐘，讓紀錄替你說話。</p>
         </div>
-
+ 
         <div class="grid md:grid-cols-3 gap-6">
             <!-- Step 1 -->
             <div class="step-card p-8 fade-up">
@@ -374,7 +374,7 @@
                     <span class="mono text-xs text-orange-400">完全免費</span>
                 </div>
             </div>
-
+ 
             <!-- Step 2 -->
             <div class="step-card p-8 fade-up" style="transition-delay:0.1s">
                 <div class="step-num mb-4">02</div>
@@ -386,7 +386,7 @@
                     <span class="mono text-xs text-orange-400">0 到 29 份　免費</span>
                 </div>
             </div>
-
+ 
             <!-- Step 3 -->
             <div class="step-card p-8 fade-up" style="transition-delay:0.2s">
                 <div class="step-num mb-4">03</div>
@@ -399,47 +399,110 @@
                 </div>
             </div>
         </div>
-
+ 
         <div class="text-center mt-12 fade-up">
             <a href="https://forms.gle/iMQwdAxbp8ecNxX38" target="_blank" class="btn-primary">
                 免費開始建第一份紀錄
                 <i class="fas fa-arrow-right text-sm"></i>
             </a>
-
+ 
         <!-- 訂閱申請表單 -->
-        <div id="subscribeBtn" style="text-align:center;margin-top:2rem;">
-            <button onclick="document.getElementById('subscribeBtn').style.display='none';document.getElementById('subscribeForm').style.display='block';" style="background:#f97316;color:white;font-weight:700;border-radius:999px;padding:0.9rem 2.5rem;border:none;cursor:pointer;font-size:0.95rem;">申請訂閱 NT$249/月 →</button>
-            <p style="margin-top:0.5rem;font-size:0.7rem;color:#475569;font-family:monospace;">建立30份紀錄後再訂閱，現在可先預約</p>
-        </div>
-        <div id="subscribeForm" style="display:none;background:#132236;border:1px solid #1e3a5f;border-radius:1.25rem;padding:2rem;margin-top:1.5rem;max-width:28rem;margin-left:auto;margin-right:auto;">
-            <h3 style="font-weight:700;font-size:1rem;color:white;margin-bottom:0.35rem;">申請訂閱 NT$249/月</h3>
-            <p style="font-size:0.75rem;color:#64748b;margin-bottom:1.25rem;">送出後24小時內寄送信用卡付款連結至您的信箱。</p>
-            <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                <div>
-                    <label style="font-size:0.75rem;color:#94a3b8;display:block;margin-bottom:0.3rem;">教練姓名 *</label>
-                    <input type="text" id="sub_name" placeholder="您的姓名" style="width:100%;background:#0f1c2e;border:1px solid #1e3a5f;border-radius:0.5rem;padding:0.6rem 0.85rem;color:white;font-size:0.875rem;outline:none;">
-                </div>
-                <div>
-                    <label style="font-size:0.75rem;color:#94a3b8;display:block;margin-bottom:0.3rem;">Email *</label>
-                    <input type="email" id="sub_email" placeholder="your@email.com" style="width:100%;background:#0f1c2e;border:1px solid #1e3a5f;border-radius:0.5rem;padding:0.6rem 0.85rem;color:white;font-size:0.875rem;outline:none;">
-                </div>
-                <div style="background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.15);border-radius:0.5rem;padding:0.75rem;font-size:0.75rem;color:#94a3b8;">
-                    方案：PingRisk 訂閱版 NT$249/月<br>支付：信用卡（Visa／Mastercard／JCB）<br>藍新金流安全加密處理
-                </div>
-                <button onclick="submitSubscribe()" style="background:#f97316;color:white;font-weight:700;border-radius:999px;padding:0.75rem;border:none;cursor:pointer;font-size:0.875rem;">確認申請訂閱</button>
+        <div style="max-width:32rem;margin:2.5rem auto 0;">
+ 
+            <!-- 未展開狀態：按鈕 -->
+            <div id="subBtnWrap" style="text-align:center;">
+                <button onclick="document.getElementById('subBtnWrap').style.display='none';document.getElementById('subFormWrap').style.display='block';"
+                    style="background:#f97316;color:white;font-weight:700;border-radius:999px;padding:1rem 2.5rem;border:none;cursor:pointer;font-size:1rem;box-shadow:0 8px 24px rgba(249,115,22,0.3);">
+                    申請訂閱 NT$249/月 →
+                </button>
+                <p style="margin-top:0.5rem;font-size:0.7rem;color:#475569;font-family:monospace;">建立30份紀錄後啟用，可先預約</p>
             </div>
+ 
+            <!-- 展開後：訂閱申請表單 -->
+            <div id="subFormWrap" style="display:none;background:#0f1c2e;border:1px solid #1e3a5f;border-radius:1.5rem;overflow:hidden;">
+ 
+                <!-- 表單標題列 -->
+                <div style="background:#132236;padding:1.25rem 1.75rem;border-bottom:1px solid #1e3a5f;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div>
+                            <div style="font-weight:900;color:white;font-size:1rem;">訂閱 PingRisk</div>
+                            <div style="font-size:0.75rem;color:#64748b;margin-top:0.15rem;">NT$249 / 月，隨時可取消</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:1.5rem;font-weight:900;color:#f97316;">NT$249</div>
+                            <div style="font-size:0.65rem;color:#64748b;font-family:monospace;">/月</div>
+                        </div>
+                    </div>
+                </div>
+ 
+                <!-- 表單欄位 -->
+                <div style="padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:1rem;">
+ 
+                    <div>
+                        <label style="font-size:0.75rem;color:#94a3b8;display:block;margin-bottom:0.4rem;font-weight:600;">教練姓名 *</label>
+                        <input type="text" id="sub_name" placeholder="請填寫您的姓名"
+                            style="width:100%;background:#080f1a;border:1px solid #1e3a5f;border-radius:0.625rem;padding:0.75rem 1rem;color:white;font-size:0.875rem;outline:none;transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#1e3a5f'">
+                    </div>
+ 
+                    <div>
+                        <label style="font-size:0.75rem;color:#94a3b8;display:block;margin-bottom:0.4rem;font-weight:600;">電子郵件 *</label>
+                        <input type="email" id="sub_email" placeholder="your@email.com（付款連結將寄至此信箱）"
+                            style="width:100%;background:#080f1a;border:1px solid #1e3a5f;border-radius:0.625rem;padding:0.75rem 1rem;color:white;font-size:0.875rem;outline:none;transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#1e3a5f'">
+                    </div>
+ 
+                    <!-- 方案摘要 -->
+                    <div style="background:#080f1a;border:1px solid #1e3a5f;border-radius:0.75rem;padding:1rem;">
+                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.5rem;font-family:monospace;">訂閱方案摘要</div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#e2e8f0;margin-bottom:0.35rem;">
+                            <span>PingRisk 訂閱版</span><span>NT$249/月</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:#64748b;">
+                            <span>學員紀錄無限儲存＋文件包解鎖</span><span>隨時可取消</span>
+                        </div>
+                    </div>
+ 
+                    <!-- 付款方式說明 -->
+                    <div style="background:rgba(249,115,22,0.05);border:1px solid rgba(249,115,22,0.2);border-radius:0.75rem;padding:0.875rem 1rem;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <span style="font-size:0.75rem;font-weight:700;color:#f97316;">藍新金流　安全加密付款</span>
+                        </div>
+                        <div style="font-size:0.7rem;color:#94a3b8;line-height:1.6;">
+                            送出申請後，我們將於 <strong style="color:#e2e8f0;">24小時內</strong> 寄送信用卡付款連結至您的信箱，
+                            透過 <strong style="color:#e2e8f0;">藍新金流</strong> SSL 加密頁面完成付款。<br>
+                            支援：Visa・Mastercard・JCB・銀聯
+                        </div>
+                    </div>
+ 
+                    <!-- 送出按鈕 -->
+                    <button onclick="submitSubscribe()"
+                        style="width:100%;background:#f97316;color:white;font-weight:700;border-radius:0.75rem;padding:0.9rem;border:none;cursor:pointer;font-size:0.95rem;transition:background 0.2s;"
+                        onmouseover="this.style.background='#ea6c0a'" onmouseout="this.style.background='#f97316'">
+                        確認送出訂閱申請
+                    </button>
+ 
+                    <p style="text-align:center;font-size:0.65rem;color:#475569;line-height:1.5;">
+                        送出後不會立即扣款。付款連結寄出後，由您自行決定是否完成訂閱。<br>
+                        如未收到請查看垃圾信件，或來信 coachriskchecker@gmail.com
+                    </p>
+                </div>
+            </div>
+ 
+            <!-- 送出成功提示 -->
+            <div id="subscribeSuccess" style="display:none;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:1.25rem;padding:2rem;text-align:center;">
+                <div style="color:#22c55e;font-size:2rem;margin-bottom:0.75rem;">✓</div>
+                <p style="font-weight:700;color:white;font-size:1rem;margin-bottom:0.35rem;">訂閱申請已送出！</p>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.6;">我們將於 <strong style="color:#e2e8f0;">24小時內</strong> 寄送藍新金流付款連結至您的信箱。<br>完成信用卡付款後，訂閱立即生效。</p>
+            </div>
+ 
         </div>
-        <div id="subscribeSuccess" style="display:none;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:1rem;padding:1.5rem;text-align:center;margin-top:1.5rem;max-width:28rem;margin-left:auto;margin-right:auto;">
-            <div style="color:#22c55e;font-size:1.5rem;margin-bottom:0.5rem;">✓</div>
-            <p style="font-weight:700;color:white;margin-bottom:0.25rem;">訂閱申請已送出！</p>
-            <p style="font-size:0.8rem;color:#94a3b8;">我們將於24小時內寄送付款連結至您的信箱。</p>
-        </div>
-
-        </div>
+ 
     </div>
 </section>
-
-
+ 
+ 
 <!-- ── 消費者權益告知 ─────────────────────────────────────────────────────── -->
 <section id="consumer-rights" class="py-8 px-6 relative z-10">
     <div class="max-w-4xl mx-auto">
@@ -469,7 +532,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ── SECTION ③ 定價 ────────────────────────────────────────── -->
 <section id="pricing" class="py-24 px-6 relative z-10">
     <div class="max-w-4xl mx-auto">
@@ -477,7 +540,7 @@
             <div class="section-label">Pricing</div>
             <h2 class="text-3xl font-black tracking-tight mb-4">簡單、透明、從免費開始</h2>
         </div>
-
+ 
         <div class="grid md:grid-cols-2 gap-8">
             <!-- Free -->
             <div class="price-card p-8 fade-up">
@@ -516,7 +579,7 @@
                     </a>
                 </div>
             </div>
-
+ 
             <!-- Subscription -->
             <div class="price-card featured p-8 fade-up" style="transition-delay:0.1s">
                 <div class="flex items-center justify-between mb-4">
@@ -568,8 +631,8 @@
         </div>
     </div>
 </section>
-
-
+ 
+ 
 <!-- ── 訂閱流程說明 ─────────────────────────────────────────────────────── -->
 <section id="subscribe" class="py-24 px-6 relative z-10" style="background:linear-gradient(180deg,var(--bg) 0%,#0a1628 50%,var(--bg) 100%);">
     <div class="max-w-4xl mx-auto">
@@ -610,7 +673,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ── SECTION ④ 風險診斷 ────────────────────────────────────── -->
 <section id="checker" class="py-24 px-6 relative z-10">
     <div class="max-w-3xl mx-auto">
@@ -619,7 +682,7 @@
             <h2 class="text-3xl font-black tracking-tight mb-4">現在，花30秒診斷你的缺口</h2>
             <p class="text-slate-400">台灣判決告訴我們，這四件事決定教練能不能全身而退。</p>
         </div>
-
+ 
         <div class="space-y-3 mb-8 fade-up">
             <label class="block cursor-pointer">
                 <input type="checkbox" id="q1" onchange="calcRisk()">
@@ -670,7 +733,7 @@
                 </div>
             </label>
         </div>
-
+ 
         <div id="resultBox" class="fade-up">
             <div id="resultTitle" class="font-bold text-lg mb-2"></div>
             <div id="resultText" class="text-sm text-slate-300 mb-5 leading-relaxed"></div>
@@ -681,7 +744,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ── SECTION ⑤ 真實判決 ────────────────────────────────────── -->
 <section id="judgments" class="py-24 px-6 relative z-10">
     <div class="max-w-5xl mx-auto">
@@ -690,7 +753,7 @@
             <h2 class="text-3xl font-black tracking-tight mb-4">真實判決深度拆解</h2>
             <p class="text-slate-400">有紀錄的教練，和沒有的教練，在法庭上結果差很多。</p>
         </div>
-
+ 
         <div class="space-y-5">
             <!-- 判決 1：台中109消7 教練敗訴 -->
             <div class="judgment-card fade-up">
@@ -728,7 +791,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- 判決 2：士林114聲自72 教練勝訴 -->
             <div class="judgment-card fade-up">
                 <div class="p-7">
@@ -765,7 +828,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- 判決 3：台中113訴1196 教練勝訴但注意 -->
             <div class="judgment-card fade-up">
                 <div class="p-7">
@@ -803,7 +866,7 @@
                 </div>
             </div>
         </div>
-
+ 
         <!-- 運動防護師法議題關注區 -->
         <!-- ════════════════════════════════════════════════════════
              運動防護師法議題關注區
@@ -847,7 +910,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ── SECTION ⑥ 關於硬平 ────────────────────────────────────── -->
 <section id="about" class="py-24 px-6 relative z-10">
     <div class="max-w-4xl mx-auto">
@@ -876,7 +939,7 @@
         </div>
     </div>
 </section>
-
+ 
 <!-- ── FINAL CTA ──────────────────────────────────────────────── -->
 <section class="py-24 px-6 relative z-10">
     <div class="max-w-2xl mx-auto text-center fade-up">
@@ -890,7 +953,7 @@
         </a>
     </div>
 </section>
-
+ 
 <!-- ── FOOTER ────────────────────────────────────────────────── -->
 <footer class="py-12 px-6 relative z-10">
     <div class="max-w-5xl mx-auto">
@@ -922,7 +985,7 @@
         </div>
     </div>
 </footer>
-
+ 
 <script>
 // ── Checkbox interaction ──────────────────────────────────────
 document.querySelectorAll('input[type=checkbox]').forEach((cb, i) => {
@@ -937,7 +1000,7 @@ document.querySelectorAll('input[type=checkbox]').forEach((cb, i) => {
         }
     });
 });
-
+ 
 // ── Risk calculator ───────────────────────────────────────────
 function calcRisk() {
     const qs = ['q1','q2','q3','q4'].map(id => document.getElementById(id).checked);
@@ -945,10 +1008,10 @@ function calcRisk() {
     const box = document.getElementById('resultBox');
     const title = document.getElementById('resultTitle');
     const text = document.getElementById('resultText');
-
+ 
     box.style.display = 'block';
     box.className = '';
-
+ 
     if (score === 0) {
         box.classList.add('risk-high');
         title.innerHTML = '<span style="color:#ef4444">⚠ 高度暴露：你目前沒有任何書面保護</span>';
@@ -967,7 +1030,7 @@ function calcRisk() {
         text.textContent = '你不只懂教學，更懂管理。建議持續維持這套行政規格，並透過定期記錄強化你的防護紀錄鏈。';
     }
 }
-
+ 
 // ── Judgment expand/collapse ──────────────────────────────────
 function toggleJudgment(id) {
     const panel = document.getElementById(id);
@@ -979,7 +1042,7 @@ function toggleJudgment(id) {
         ? '查看完整解析 <span class="arrow">→</span>'
         : '收起解析 <span class="arrow">↑</span>';
 }
-
+ 
 // ── Scroll fade-in ────────────────────────────────────────────
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -989,9 +1052,9 @@ const observer = new IntersectionObserver((entries) => {
         }
     });
 }, { threshold: 0.1 });
-
+ 
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
+ 
 // ── Smooth scroll for nav links ───────────────────────────────
 document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
@@ -1001,7 +1064,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     });
 });
 </script>
-
+ 
 <!-- ── POLICY MODALS ────────────────────────────────────────────────────── -->
 <div id="policyOverlay" style="display:none;position:fixed;inset:0;z-index:200;padding:1rem;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);" onclick="closePolicy(event)">
     <div style="background:#0f1c2e;border:1px solid #1e3a5f;border-radius:1.5rem;width:100%;max-width:42rem;max-height:85vh;overflow-y:auto;position:relative;" id="policyBox">
@@ -1009,7 +1072,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
         <div id="policyContent" style="padding:2.5rem;"></div>
     </div>
 </div>
-
+ 
 <script>
 var policyContents = {
   tos: '\n<h2 style="font-size:1.4rem;font-weight:900;color:white;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #1e3a5f;">服務條款</h2>\n<div style="color:#94a3b8;font-size:0.875rem;line-height:1.8;display:flex;flex-direction:column;gap:1.25rem;">\n  <section>\n    <p style="font-weight:700;color:#e2e8f0;margin-bottom:0.5rem;">一、服務性質與定位</p>\n    <p>「教練風險軍師 PingRisk」所提供之學員紀錄系統、執業文件包及相關資訊，係基於台灣判決實務與行政管理最佳實踐之建議，旨在協助健身教練完善行政流程以降低執業風險。本服務不構成律師正式法律代理或執業律師之法律意見，使用者應依個別情況進行最終確認與調整。</p>\n  </section>\n  <section>\n    <p style="font-weight:700;color:#e2e8f0;margin-bottom:0.5rem;">二、智慧財產權</p>\n    <p>本服務所提供之所有文件範本、攻略包及數位內容均受著作權法保護，購買之產品僅限購買者本人執業範圍內使用，嚴禁未經授權之轉售或散佈。</p>\n  </section>\n  <section>\n    <p style="font-weight:700;color:#e2e8f0;margin-bottom:0.5rem;">三、訂閱服務條款</p>\n    <p>訂閱方案採月費制（NT$249/月），訂閱者可隨時取消，不設違約金。取消後，當期已付費用不予退還，服務持續至當期結束。</p>\n  </section>\n  <section>\n    <p style="font-weight:700;color:#e2e8f0;margin-bottom:0.5rem;">四、內容更新承諾</p>\n    <p>本服務將隨台灣法規與判決趨勢持續更新文件內容，已訂閱客戶將收到更新通知。</p>\n  </section>\n  <section>\n    <p style="font-weight:700;color:#e2e8f0;margin-bottom:0.5rem;">五、服務聯繫</p>\n    <p>如有任何問題，請聯繫：coachriskchecker@gmail.com</p>\n  </section>\n</div>\n',
@@ -1027,6 +1090,6 @@ function closePolicy(e, force) {
   }
 }
 </script>
-
+ 
 </body>
 </html>
