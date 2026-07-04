@@ -136,7 +136,7 @@ async function analyze(tool) {
         : `你是台灣運動教練職業法律風險分析師，專精課前同意書合規審查。\n\n分析以下同意書：\n${input}\n\n只回應JSON，格式：{"overall_rating":"RISKY或PARTIAL或SOLID","summary":"2-3句評估","missing_items":[{"item":"缺失項目","why_important":"重要性","severity":"HIGH或MEDIUM或LOW"}],"problematic_clauses":[{"clause":"問題條款","problem":"問題","fix":"修改建議"}],"good_points":["優點"],"recommendations":["建議1","建議2"],"next_step":"FREE或CONSULT","next_step_reason":"說明"}。SOLID→FREE，其他→CONSULT。`;
 
     try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const res = await fetch('https://claude-prox.yyp0932.workers.dev/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
